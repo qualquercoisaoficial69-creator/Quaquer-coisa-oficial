@@ -149,7 +149,7 @@ export const initDatabase = () => {
     // Sincronização / Migração de membros da equipe (Substituição Enzo -> Gaby e remoção de João)
     try {
       await client.execute(`DELETE FROM team_members WHERE name = 'João'`);
-      await client.execute(`UPDATE team_members SET name = 'Gaby', role = 'Programadora & Game Design' WHERE name = 'Enzo'`);
+      await client.execute(`UPDATE team_members SET name = 'Gaby', role = 'Game Design, Personagens & Arte', bio = 'Criação visual de personagens, auxílio na produção de arte, game design e suporte geral no estúdio.' WHERE name = 'Enzo' OR name = 'Gaby'`);
       await client.execute(`UPDATE team_members SET order_index = 5 WHERE name = 'Maryssa'`);
     } catch (syncErr) {
       console.warn('Aviso ao sincronizar membros da equipe:', syncErr.message);
@@ -172,7 +172,7 @@ export const initDatabase = () => {
 
         const members = [
           { name: 'Brenno', role: 'Desenvolvedor Full Stack & Game Design', bio: 'Programação de sistemas, arquitetura de software e desenvolvimento geral.', avatar: 'imagens/brenno-icon.jpeg', order: 1 },
-          { name: 'Gaby', role: 'Programadora & Game Design', bio: 'Construção da lógica de jogo, balanceamento e gameplay.', avatar: 'imagens/en.jpg', order: 2 },
+          { name: 'Gaby', role: 'Game Design, Personagens & Arte', bio: 'Criação visual de personagens, auxílio na produção de arte, game design e suporte geral no estúdio.', avatar: 'imagens/en.jpg', order: 2 },
           { name: 'Gustavo', role: 'Mecânicas & Programação', bio: 'Implementação de combate, IA e controles.', avatar: 'imagens/gus.jpg', order: 3 },
           { name: 'Iza', role: 'Diretora de Arte & Ilustradora', bio: 'Criação dos cenários imersivos da Catedral e conceito visual.', avatar: 'imagens/iz.jpg', order: 4 },
           { name: 'Maryssa', role: 'UI/UX & Roteirista', bio: 'Design de interfaces e narrativa profunda do mundo.', avatar: 'imagens/ma.jpg', order: 5 }

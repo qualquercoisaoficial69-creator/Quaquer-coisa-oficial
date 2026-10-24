@@ -37,7 +37,29 @@ router.post('/', authenticateToken, async (req, res) => {
   }
 });
 
-// 3. Deletar membro da equipe (CMS - Protegido)
+// 3. Atualizar membro da equipe (CMS - Protegido)
+router.put('/:id', authenticateToken, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { name, role, bio, avatar_url, order_index } = req.body;
+
+    await run(`
+      UPDATE team_members 
+      SET name = COALESCE(?, name),
+          role = COALESCE(?, role),
+          bio = COALESCE(?, bio),
+          avatar_url = COALESCE(?, avatar_url),
+          order_index = COALESCE(?, order_index)
+      WHERE id = ?
+    `, [name, role, bio, avatar_url, order_index, id]);
+
+    res.json({ message: 'Membro atualizado com sucesso!' });
+  } catch (error) {
+    res.status(500).json({ error: 'Erro ao atualizar membro: ' + error.message });
+  }
+});
+
+// 4. Deletar membro da equipe (CMS - Protegido)
 router.delete('/:id', authenticateToken, async (req, res) => {
   try {
     const { id } = req.params;
