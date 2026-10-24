@@ -29,9 +29,9 @@ app.use(express.urlencoded({ extended: true }));
 const uploadDir = path.resolve(__dirname, '../uploads');
 app.use('/uploads', express.static(uploadDir));
 
-// Servir os arquivos do Frontend (site-qualquer-coisa)
-const frontendDir = path.resolve(__dirname, '../site-qualquer-coisa');
-app.use(express.static(frontendDir));
+// Servir os arquivos do Frontend (pasta public)
+const publicDir = path.resolve(__dirname, '../public');
+app.use(express.static(publicDir));
 
 // Inicializar banco de dados SQLite / Turso
 let dbInitialized = false;

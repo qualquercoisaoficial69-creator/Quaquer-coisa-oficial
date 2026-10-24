@@ -4,14 +4,6 @@
     {
       "source": "/api/(.*)",
       "destination": "/api/index.js"
-    },
-    {
-      "source": "/",
-      "destination": "/site-qualquer-coisa/index.html"
-    },
-    {
-      "source": "/(.*)",
-      "destination": "/site-qualquer-coisa/$1"
     }
   ]
 }
