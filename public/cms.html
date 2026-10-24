@@ -449,6 +449,59 @@
         </div>
     </div>
 
+    <!-- MODAL DE NOVO JOGO -->
+    <div class="game-modal-overlay" id="cmsNewGameModal" aria-hidden="true" role="dialog" style="display:none;position:fixed;inset:0;background:rgba(8,1,18,0.85);backdrop-filter:blur(8px);z-index:99999;align-items:center;justify-content:center;padding:1rem;">
+        <div class="game-modal-box" style="background:#16092b;border:1px solid #7c3aed;border-radius:14px;max-width:520px;width:100%;padding:28px;box-shadow:0 0 35px rgba(124,58,237,0.3);position:relative;">
+            <button type="button" class="modal-close-btn" onclick="closeNewGameModal()" aria-label="Fechar janela" style="position:absolute;top:1rem;right:1rem;background:none;border:none;color:#aaa;font-size:1.4rem;cursor:pointer;">
+                <i class="fas fa-times"></i>
+            </button>
+            <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;">
+                <i class="fas fa-gamepad" style="font-size:1.8rem;color:var(--cyan);"></i>
+                <div>
+                    <h3 style="font-family:'Orbitron',sans-serif;color:#fff;margin:0;font-size:1.2rem;">Cadastrar Novo Jogo</h3>
+                    <span style="font-size:0.8rem;color:rgba(255,255,255,0.6);">Cria uma nova página personalizada para o catálogo</span>
+                </div>
+            </div>
+            
+            <form id="newGameForm" onsubmit="submitNewGame(event)">
+                <div style="margin-bottom:12px;">
+                    <label style="display:block;font-size:0.8rem;color:#c084fc;margin-bottom:4px;text-transform:uppercase;">Título do Jogo</label>
+                    <input type="text" id="newGameTitle" required placeholder="Ex: Chronos Protocol" style="width:100%;box-sizing:border-box;background:#0d0519;border:1px solid rgba(255,255,255,0.15);padding:10px 14px;border-radius:8px;color:#fff;outline:none;" oninput="generateSlug(this.value)">
+                </div>
+                <div style="margin-bottom:12px;">
+                    <label style="display:block;font-size:0.8rem;color:#c084fc;margin-bottom:4px;text-transform:uppercase;">Slug (URL da Página)</label>
+                    <input type="text" id="newGameSlug" required placeholder="chronos-protocol" style="width:100%;box-sizing:border-box;background:#0d0519;border:1px solid rgba(255,255,255,0.15);padding:10px 14px;border-radius:8px;color:#06b6d4;outline:none;">
+                </div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;">
+                    <div>
+                        <label style="display:block;font-size:0.8rem;color:#c084fc;margin-bottom:4px;text-transform:uppercase;">Gênero</label>
+                        <input type="text" id="newGameGenre" placeholder="Ex: RPG 2D / Ação" style="width:100%;box-sizing:border-box;background:#0d0519;border:1px solid rgba(255,255,255,0.15);padding:10px 14px;border-radius:8px;color:#fff;outline:none;">
+                    </div>
+                    <div>
+                        <label style="display:block;font-size:0.8rem;color:#c084fc;margin-bottom:4px;text-transform:uppercase;">Status</label>
+                        <select id="newGameStatus" style="width:100%;box-sizing:border-box;background:#0d0519;border:1px solid rgba(255,255,255,0.15);padding:10px 14px;border-radius:8px;color:#fff;outline:none;">
+                            <option value="prototipo">Protótipo</option>
+                            <option value="alpha">Alpha</option>
+                            <option value="beta">Beta</option>
+                            <option value="lancado">Lançado</option>
+                            <option value="ideia">Ideia</option>
+                        </select>
+                    </div>
+                </div>
+                <div style="margin-bottom:14px;">
+                    <label style="display:block;font-size:0.8rem;color:#c084fc;margin-bottom:4px;text-transform:uppercase;">Slogan / Tagline</label>
+                    <input type="text" id="newGameTagline" placeholder="Ex: Uma jornada misteriosa através das sombras..." style="width:100%;box-sizing:border-box;background:#0d0519;border:1px solid rgba(255,255,255,0.15);padding:10px 14px;border-radius:8px;color:#fff;outline:none;">
+                </div>
+                <div style="display:flex;gap:12px;justify-content:flex-end;margin-top:16px;">
+                    <button type="button" class="btn-cms-cancel" onclick="closeNewGameModal()">Cancelar</button>
+                    <button type="submit" id="newGameSubmitBtn" class="btn-spotlight-play">
+                        <i class="fas fa-plus"></i> Criar Jogo
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <!-- CLIENTE API & CONEXÃO BACKEND LOCAL -->
     <script src="scripts/api-client.js"></script>
     <script src="scripts/firebase-config.js"></script>
