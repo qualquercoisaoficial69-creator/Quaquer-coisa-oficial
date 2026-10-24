@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sobre Nós | Qualquer Coisa Rápido</title>
+    <meta name="description" content="Conheça a Qualquer Coisa Rápido, equipe indie por trás de Unique Soul. Nossa história, frentes de atuação e fundadores.">
+    <meta name="theme-color" content="#2d0a4e">
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Sobre Nós | Qualquer Coisa Rápido">
+    <meta property="og:description" content="Uma equipe indie criando narrativas, arte e experiências em jogos como Unique Soul.">
+    <meta property="og:image" content="imagens/unique_soul_capa.png">
+    <link rel="stylesheet" href="css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&family=Orbitron:wght@600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="icon" type="image/png" href="imagens/favicon.png">
+    <link rel="shortcut icon" href="favicon.ico">
+</head>
+<body class="gamestore-body">
+
+    <div class="gamestore-wrapper">
+        <div class="gamestore-window">
+            
+            <!-- SIDEBAR GAMESTORE PADRONIZADA -->
+            <aside class="gamestore-sidebar">
+                <button type="button" class="sidebar-mobile-close-btn" onclick="toggleMobileSidebar(false)" aria-label="Fechar menu">
+                    <i class="fas fa-times" aria-hidden="true"></i>
+                </button>
+                <div>
+                    <a href="home.html" class="sidebar-brand" aria-label="Qualquer Coisa Rápido Início">
+                        <img src="imagens/Logo_colorida.png" alt="Logo da Qualquer Coisa Rápido" class="sidebar-logo">
+                        <div class="sidebar-brand-text">
+                            <h2>QUALQUER COISA</h2>
+                            <span>ESTÚDIO INDIE</span>
+                        </div>
+                    </a>
+
+                    <nav class="sidebar-nav" aria-label="Menu principal">
+                        <span class="sidebar-nav-title">Navegação</span>
+                        <a href="home.html" class="sidebar-link">
+                            <i class="fas fa-home" aria-hidden="true"></i>
+                            <span>Início</span>
+                        </a>
+                        <a href="jogo.html" class="sidebar-link">
+                            <i class="fas fa-th-large" aria-hidden="true"></i>
+                            <span>Catálogo de Jogos</span>
+                        </a>
+                        <a href="sobre.html" class="sidebar-link active" aria-current="page">
+                            <i class="fas fa-book-open" aria-hidden="true"></i>
+                            <span>Sobre Nós</span>
+                        </a>
+                        <a href="membros.html" class="sidebar-link">
+                            <i class="fas fa-users" aria-hidden="true"></i>
+                            <span>Membros</span>
+                        </a>
+                        <a href="cms.html" class="sidebar-link creator-only" title="Painel de Criação e Edição de Posts" style="display: none;">
+                            <i class="fas fa-feather-alt" aria-hidden="true"></i>
+                            <span>Painel CMS</span>
+                        </a>
+                    </nav>
+
+                    <div class="fast-launch-section">
+                        <span class="sidebar-nav-title">Destaques Rápidos</span>
+                        <a href="home.html?game=unique-soul" class="fast-launch-item" title="Ver Unique Soul">
+                            <img src="imagens/unique_soul_capa.png" alt="Capa Unique Soul" class="fast-launch-thumb">
+                            <div class="fast-launch-info">
+                                <span class="fast-launch-name">Unique Soul</span>
+                                <span class="fast-launch-status">Destaque • Alpha 0.1</span>
+                            </div>
+                        </a>
+                        <a href="home.html?game=catedral-almas" class="fast-launch-item" title="Ver A Catedral">
+                            <img src="imagens/unique_soul_cenario.png" alt="Cenário Catedral" class="fast-launch-thumb">
+                            <div class="fast-launch-info">
+                                <span class="fast-launch-name">A Catedral</span>
+                                <span class="fast-launch-status">Arte Conceitual</span>
+                            </div>
+                        </a>
+                        <a href="home.html?game=qualquer-coisa-quest" class="fast-launch-item" title="Ver Qualquer Coisa Quest">
+                            <img src="imagens/Qualquer_coisa_corpo_inteiro.png" alt="Mascote" class="fast-launch-thumb">
+                            <div class="fast-launch-info">
+                                <span class="fast-launch-name">O Mascote</span>
+                                <span class="fast-launch-status">Protótipo 2D</span>
+                            </div>
+                        </a>
+                        <a href="https://discord.gg/qrk3CjQ5HF" target="_blank" rel="noopener noreferrer" class="fast-launch-item" title="Comunidade Discord">
+                            <div class="fast-launch-thumb" style="display:flex;align-items:center;justify-content:center;background:#5865f2;color:#fff;">
+                                <i class="fab fa-discord"></i>
+                            </div>
+                            <div class="fast-launch-info">
+                                <span class="fast-launch-name">Discord</span>
+                                <span class="fast-launch-status">Comunidade Indie</span>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Widget de Status do Jogo no rodapé da Sidebar -->
+                <div class="sidebar-status-widget">
+                    <img src="imagens/unique_soul_capa.png" alt="Miniatura Unique Soul" class="widget-thumb">
+                    <div class="widget-details">
+                        <div class="widget-title">Unique Soul</div>
+                        <div class="widget-subtitle">Alpha 0.1 em Produção</div>
+                        <div class="widget-progress">
+                            <div class="widget-progress-bar"></div>
+                        </div>
+                    </div>
+                </div>
+            </aside>
+
+            <!-- CONTEÚDO PRINCIPAL (GAMESTORE - SEÇÃO SOBRE NÓS) -->
+            <main class="gamestore-main">
+                
+                <!-- TOPBAR -->
+                <header class="gamestore-topbar">
+                    <button type="button" class="mobile-sidebar-toggle" onclick="toggleMobileSidebar()" aria-label="Abrir menu">
+                        <i class="fas fa-bars" aria-hidden="true"></i>
+                    </button>
+
+                    <div class="topbar-search-wrapper">
+                        <i class="fas fa-search topbar-search-icon" aria-hidden="true"></i>
+                        <input type="text" class="topbar-search-input" placeholder="Buscar jogos, equipe, novidades..." aria-label="Buscar" onkeydown="if(event.key==='Enter') window.location.href='home.html';">
+                    </div>
+
+                    <div class="topbar-actions">
+                        <a href="javascript:void(0)" onclick="alert('Jogos favoritados: ' + (wishlist.length ? wishlist.join(', ') : 'Nenhum ainda. Clique no coração dos jogos para favoritar!'))" class="topbar-btn" title="Favoritos / Lista de Desejos" aria-label="Lista de desejos">
+                            <i class="fas fa-heart" aria-hidden="true"></i>
+                            <span class="topbar-badge" id="wishlistCount" style="display: none;">0</span>
+                        </a>
+
+                        <button type="button" class="topbar-btn" id="themeToggle" aria-label="Alternar tema" title="Alternar tema claro/escuro">
+                            <i class="fas fa-moon" aria-hidden="true"></i>
+                        </button>
+
+                        <div class="topbar-profile-container">
+                            <!-- Atualizado dinamicamente pelo firebase-config.js -->
+                        </div>
+                    </div>
+                </header>
+
+                <!-- CONTEÚDO DO SOBRE NÓS COM DESIGN GAMESTORE -->
+                <section class="gamestore-about-section" aria-label="Sobre a Qualquer Coisa Rápido">
+                    
+                    <!-- Hero Banner do Estúdio -->
+                    <div class="about-store-hero">
+                        <div class="about-store-hero-content">
+                            <span class="about-store-badge"><i class="fas fa-sparkles"></i> ESTÚDIO INDIE EM ASCENSÃO</span>
+                            <h1 class="about-store-title">Criando um novo mundo <span>e definindo o nosso futuro.</span></h1>
+                            <p class="about-store-tagline">A <strong>Qualquer Coisa Rápido</strong> nasceu da união entre paixão, arte autoral e código, focada em criar experiências narrativas profundas e inesquecíveis como <em>Unique Soul</em>.</p>
+                        </div>
+                        <img src="imagens/Qualquer_coisa_corpo_inteiro.png" alt="Mascote Qualquer Coisa" class="about-store-hero-mascot">
+                    </div>
+
+                    <!-- Métricas / Números do Estúdio -->
+                    <div class="about-stats-grid">
+                        <div class="about-stat-card">
+                            <div class="stat-icon"><i class="fas fa-gamepad"></i></div>
+                            <div class="stat-info">
+                                <span class="stat-number">1º</span>
+                                <span class="stat-label">Jogo Autoral Oficial</span>
+                            </div>
+                        </div>
+                        <div class="about-stat-card">
+                            <div class="stat-icon"><i class="fas fa-user-astronaut"></i></div>
+                            <div class="stat-info">
+                                <span class="stat-number">6</span>
+                                <span class="stat-label">Desenvolvedores Indie</span>
+                            </div>
+                        </div>
+                        <div class="about-stat-card">
+                            <div class="stat-icon"><i class="fas fa-code-branch"></i></div>
+                            <div class="stat-info">
+                                <span class="stat-number">Alpha 0.1</span>
+                                <span class="stat-label">Estágio de Produção</span>
+                            </div>
+                        </div>
+                        <div class="about-stat-card">
+                            <div class="stat-icon"><i class="fas fa-infinity"></i></div>
+                            <div class="stat-info">
+                                <span class="stat-number">100%</span>
+                                <span class="stat-label">Feito com Paixão</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Duas Colunas: Quem Somos e Como Começou -->
+                    <div class="about-story-grid">
+                        <div class="about-story-card">
+                            <div class="story-card-header">
+                                <i class="fas fa-users"></i>
+                                <h3>Quem Somos</h3>
+                            </div>
+                            <p>A <strong>Qualquer Coisa</strong> é uma equipe independente formada por Brenno, Enzo, Iza, João, Gustavo e Maryssa, alunos do terceiro ano do curso técnico de Informática para Internet.</p>
+                            <p>O que começou como um grupo de estudantes se transformou em uma missão ambiciosa: conceber, programar, ilustrar e lançar um jogo comercial completo a partir do zero absoluto, construindo um estúdio real.</p>
+                        </div>
+
+                        <div class="about-story-card">
+                            <div class="story-card-header">
+                                <i class="fas fa-history"></i>
+                                <h3>Como Tudo Começou</h3>
+                            </div>
+                            <p>Tudo começou em uma sala de aula no interior de São Paulo. Entre matérias, provas e prazos apertados, descobrimos um sonho em comum. Com a chegada do TCC, decidimos unânimes: <em>"Por que não transformar o projeto final no que realmente amamos?"</em></p>
+                            <p>Assim nasceu o <strong>Unique Soul</strong>, o ponto de convergência de cada habilidade adquirida e o alicerce sólido da nossa trajetória no desenvolvimento de jogos.</p>
+                        </div>
+                    </div>
+
+                    <!-- 5 Frentes de Atuação -->
+                    <div class="about-skills-matrix">
+                        <div class="skills-matrix-title">
+                            <h3>Nossas Frentes de Desenvolvimento</h3>
+                            <p>Dividimos forças em áreas essenciais para dar vida ao ecossistema dos nossos jogos</p>
+                        </div>
+                        <div class="skills-matrix-grid">
+                            <div class="skill-matrix-card">
+                                <div class="skill-icon-badge"><i class="fas fa-code"></i></div>
+                                <h4>Programação</h4>
+                                <p>Sistemas lógicos, física de movimento, controle de colisões e algoritmos de combate em C# e JavaScript.</p>
+                            </div>
+                            <div class="skill-matrix-card">
+                                <div class="skill-icon-badge" style="border-color:var(--magenta);color:var(--magenta);background:rgba(255,0,255,0.12);"><i class="fas fa-paint-brush"></i></div>
+                                <h4>Ilustração & Arte</h4>
+                                <p>Concept art, designs de personagens, vitrais góticos sacros e paleta de cores atmosférica 2D.</p>
+                            </div>
+                            <div class="skill-matrix-card">
+                                <div class="skill-icon-badge" style="border-color:var(--yellow);color:var(--yellow);background:rgba(255,255,0,0.12);"><i class="fas fa-film"></i></div>
+                                <h4>Animação</h4>
+                                <p>Ciclos de caminhada, transições de ataque, efeitos de partículas e fluidez visual quadro a quadro.</p>
+                            </div>
+                            <div class="skill-matrix-card">
+                                <div class="skill-icon-badge" style="border-color:#3399ff;color:#3399ff;background:rgba(51,153,255,0.12);"><i class="fas fa-music"></i></div>
+                                <h4>Sound Design</h4>
+                                <p>Trilha sonora autoral dinâmica com sintetizadores, ambientação sonora e efeitos foley imersivos.</p>
+                            </div>
+                            <div class="skill-matrix-card">
+                                <div class="skill-icon-badge" style="border-color:#ff9933;color:#ff9933;background:rgba(255,153,51,0.12);"><i class="fas fa-pen-nib"></i></div>
+                                <h4>Narrativa & Lore</h4>
+                                <p>Construção do universo espiritual de Unique Soul, roteiro dos diálogos e dilemas morais.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Os 6 Fundadores (Apresentação estilizada no GameStore com suas cores de membro) -->
+                    <div class="about-founders-showcase">
+                        <div class="skills-matrix-title">
+                            <h3>Os Criadores da Qualquer Coisa Rápido</h3>
+                            <p>Cada membro traz sua assinatura visual e técnica para a construção do estúdio</p>
+                        </div>
+                        <div class="founders-grid-store">
+                            <div class="founder-store-card" style="--founder-color: #bf40bf;">
+                                <img src="imagens/brenno-icon.jpeg" alt="Brenno" class="founder-avatar-circle">
+                                <h4>Brenno</h4>
+                                <span class="founder-role-text">Full Stack Dev</span>
+                            </div>
+                            <div class="founder-store-card" style="--founder-color: #ff66cc;">
+                                <img src="imagens/en.jpg" alt="Enzo" class="founder-avatar-circle">
+                                <h4>Enzo</h4>
+                                <span class="founder-role-text">Programador</span>
+                            </div>
+                            <div class="founder-store-card" style="--founder-color: #3399ff;">
+                                <img src="imagens/gus.jpg" alt="Gustavo" class="founder-avatar-circle">
+                                <h4>Gustavo</h4>
+                                <span class="founder-role-text">Mecânicas & Dev</span>
+                            </div>
+                            <div class="founder-store-card" style="--founder-color: #33ff33;">
+                                <img src="imagens/iz.jpg" alt="Iza" class="founder-avatar-circle">
+                                <h4>Iza</h4>
+                                <span class="founder-role-text">Artes & Cenários</span>
+                            </div>
+                            <div class="founder-store-card" style="--founder-color: #ff9933;">
+                                <img src="imagens/jo.jpg" alt="João" class="founder-avatar-circle">
+                                <h4>João</h4>
+                                <span class="founder-role-text">Sound & Trilhas</span>
+                            </div>
+                            <div class="founder-store-card" style="--founder-color: #ff3333;">
+                                <img src="imagens/ma.jpg" alt="Maryssa" class="founder-avatar-circle">
+                                <h4>Maryssa</h4>
+                                <span class="founder-role-text">Arte & Roteiro</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Manifesto e Visão de Futuro -->
+                    <div class="about-manifesto-store">
+                        <h3>Você daria uma chance pra gente?</h3>
+                        <p>"Prometemos continuar vivos até o lançamento oficial de Unique Soul na Steam e Epic Games. (A gente realmente tenta!)"</p>
+                        <div class="about-manifesto-actions">
+                            <a href="home.html" class="btn-spotlight-play">
+                                <i class="fas fa-arrow-left"></i> EXPLORAR JOGOS
+                            </a>
+                            <a href="membros.html" class="btn-spotlight-details">
+                                <i class="fas fa-users"></i> VER PERFIS COMPLETOS
+                            </a>
+                            <a href="https://discord.gg/qrk3CjQ5HF" target="_blank" rel="noopener noreferrer" class="btn-spotlight-details">
+                                <i class="fab fa-discord"></i> COMUNIDADE DISCORD
+                            </a>
+                        </div>
+                    </div>
+
+                </section>
+
+                <!-- FOOTER INTERNO DA GAMESTORE -->
+                <footer class="gamestore-footer" style="margin-top:20px;padding-top:20px;border-top:1px solid rgba(255,255,255,0.08);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:16px;">
+                    <p style="font-size:0.85rem;color:rgba(255,255,255,0.6);">&copy; 2026 Qualquer Coisa Rápido • Feito com paixão pela equipe indie.</p>
+                    <div style="display:flex;gap:14px;">
+                        <a href="https://discord.gg/qrk3CjQ5HF" target="_blank" rel="noopener noreferrer" style="color:var(--cyan);text-decoration:none;font-size:0.85rem;"><i class="fab fa-discord"></i> Discord</a>
+                        <a href="https://www.instagram.com/qualquer_coisas_oficial/" target="_blank" rel="noopener noreferrer" style="color:var(--magenta);text-decoration:none;font-size:0.85rem;"><i class="fab fa-instagram"></i> Instagram</a>
+                    </div>
+                </footer>
+
+            </main>
+        </div>
+    </div>
+
+    <!-- MODAL INTERATIVO DE DETALHES DO JOGO -->
+    <div class="game-modal-overlay" id="gameModal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+        <div class="game-modal-box">
+            <button type="button" class="modal-close-btn" onclick="closeGameModal()" aria-label="Fechar janela">
+                <i class="fas fa-times" aria-hidden="true"></i>
+            </button>
+
+            <div class="modal-banner">
+                <img src="imagens/unique_soul_cenario.png" alt="Banner do jogo" class="modal-banner-img" id="modalBannerImg">
+                <div class="modal-banner-gradient"></div>
+            </div>
+
+            <div class="modal-body">
+                <div class="modal-header-info">
+                    <img src="imagens/unique_soul_capa.png" alt="Capa do Jogo" class="modal-cover-thumb" id="modalCoverImg">
+                    <div class="modal-title-area">
+                        <h2 class="modal-title" id="modalTitle">Unique Soul</h2>
+                        <div class="modal-specs-pills">
+                            <span class="modal-pill cyan" id="modalGenre">RPG / Investigação</span>
+                            <span class="modal-pill yellow" id="modalStatus">Alpha 0.1</span>
+                            <span class="modal-pill" id="modalPlatforms">PC (Steam & Epic)</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal-tabs-nav">
+                    <button type="button" class="modal-tab-btn active" data-tab="tabOverview" onclick="switchModalTab('tabOverview')">Visão Geral</button>
+                    <button type="button" class="modal-tab-btn" data-tab="tabMechanics" onclick="switchModalTab('tabMechanics')">Mecânicas</button>
+                    <button type="button" class="modal-tab-btn" data-tab="tabGallery" onclick="switchModalTab('tabGallery')">Galeria</button>
+                </div>
+
+                <div class="modal-tab-content active" id="tabOverview">
+                    <h3 style="color:var(--yellow);font-size:1.05rem;margin-bottom:8px;" id="modalTagline">Toda alma tem uma história. Qual será a sua?</h3>
+                    <p id="modalDesc" style="margin-bottom:16px;">Unique Soul é um mergulho em um universo 2D onde você precisa enfrentar julgamentos e preconceitos.</p>
+                </div>
+
+                <div class="modal-tab-content" id="tabMechanics">
+                    <h3 style="color:var(--cyan);font-size:1rem;margin-bottom:10px;">Sistemas & Gameplay</h3>
+                    <div class="modal-mechanics-grid" id="modalMechanicsGrid"></div>
+                </div>
+
+                <div class="modal-tab-content" id="tabGallery">
+                    <h3 style="color:var(--magenta);font-size:1rem;margin-bottom:10px;">Artes & Prévia Visual</h3>
+                    <div class="modal-gallery-grid" id="modalGalleryGrid"></div>
+                </div>
+
+                <div class="modal-footer-cta">
+                    <a href="jogo.html" class="btn-spotlight-play" id="modalActionBtn">
+                        <i class="fas fa-external-link-alt" aria-hidden="true"></i> ABRIR PÁGINA DO JOGO
+                    </a>
+                    <a href="https://discord.gg/qrk3CjQ5HF" target="_blank" rel="noopener noreferrer" class="btn-spotlight-details">
+                        <i class="fab fa-discord" aria-hidden="true"></i> DISCORD DO ESTÚDIO
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- CLIENTE API & CONEXÃO BACKEND LOCAL -->
+    <script src="scripts/api-client.js"></script>
+    <script src="scripts/firebase-config.js"></script>
+    <script src="scripts/script.js"></script>
+</body>
+</html>

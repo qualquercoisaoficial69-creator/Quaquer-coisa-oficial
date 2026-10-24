@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Catálogo de Jogos | Qualquer Coisa Rápido</title>
+    <meta name="description" content="Explore os jogos e projetos da Qualquer Coisa Rápido. Conheça detalhes, história e mecânicas de Unique Soul.">
+    <meta name="theme-color" content="#2d0a4e">
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Catálogo de Jogos | Qualquer Coisa Rápido">
+    <meta property="og:description" content="Conheça Unique Soul e todos os projetos autorais do nosso estúdio indie.">
+    <meta property="og:image" content="imagens/unique_soul_capa.png">
+    <link rel="stylesheet" href="css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&family=Orbitron:wght@600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="icon" type="image/png" href="imagens/favicon.png">
+    <link rel="shortcut icon" href="favicon.ico">
+</head>
+<body class="gamestore-body">
+
+    <div class="gamestore-wrapper">
+        <div class="gamestore-window">
+            
+            <!-- SIDEBAR GAMESTORE -->
+            <aside class="gamestore-sidebar">
+                <button type="button" class="sidebar-mobile-close-btn" onclick="toggleMobileSidebar(false)" aria-label="Fechar menu">
+                    <i class="fas fa-times" aria-hidden="true"></i>
+                </button>
+                <div>
+                    <a href="home.html" class="sidebar-brand" aria-label="Qualquer Coisa Rápido Início">
+                        <img src="imagens/Logo_colorida.png" alt="Logo da Qualquer Coisa Rápido" class="sidebar-logo">
+                        <div class="sidebar-brand-text">
+                            <h2>QUALQUER COISA</h2>
+                            <span>ESTÚDIO INDIE</span>
+                        </div>
+                    </a>
+
+                    <nav class="sidebar-nav" aria-label="Menu principal">
+                        <span class="sidebar-nav-title">Navegação</span>
+                        <a href="home.html" class="sidebar-link">
+                            <i class="fas fa-home" aria-hidden="true"></i>
+                            <span>Início</span>
+                        </a>
+                        <a href="jogo.html" class="sidebar-link active" aria-current="page">
+                            <i class="fas fa-th-large" aria-hidden="true"></i>
+                            <span>Catálogo de Jogos</span>
+                        </a>
+                        <a href="sobre.html" class="sidebar-link">
+                            <i class="fas fa-book-open" aria-hidden="true"></i>
+                            <span>Sobre Nós</span>
+                        </a>
+                        <a href="membros.html" class="sidebar-link">
+                            <i class="fas fa-users" aria-hidden="true"></i>
+                            <span>Membros</span>
+                        </a>
+                        <a href="cms.html" class="sidebar-link creator-only" title="Painel de Criação e Edição de Posts" style="display: none;">
+                            <i class="fas fa-feather-alt" aria-hidden="true"></i>
+                            <span>Painel CMS</span>
+                        </a>
+                    </nav>
+
+                    <div class="fast-launch-section">
+                        <span class="sidebar-nav-title">Navegar por Jogo</span>
+                        <a href="javascript:void(0)" onclick="selectGameInInspector('unique-soul')" class="fast-launch-item" title="Unique Soul">
+                            <img src="imagens/unique_soul_capa.png" alt="Capa Unique Soul" class="fast-launch-thumb">
+                            <div class="fast-launch-info">
+                                <span class="fast-launch-name">Unique Soul</span>
+                                <span class="fast-launch-status">Destaque • RPG 2D</span>
+                            </div>
+                        </a>
+                        <a href="javascript:void(0)" onclick="selectGameInInspector('catedral-almas')" class="fast-launch-item" title="A Catedral">
+                            <img src="imagens/unique_soul_cenario.png" alt="Cenário Catedral" class="fast-launch-thumb">
+                            <div class="fast-launch-info">
+                                <span class="fast-launch-name">A Catedral</span>
+                                <span class="fast-launch-status">Arte Conceitual</span>
+                            </div>
+                        </a>
+                        <a href="javascript:void(0)" onclick="selectGameInInspector('qualquer-coisa-quest')" class="fast-launch-item" title="Qualquer Coisa Quest">
+                            <img src="imagens/Qualquer_coisa_corpo_inteiro.png" alt="Mascote" class="fast-launch-thumb">
+                            <div class="fast-launch-info">
+                                <span class="fast-launch-name">O Mascote</span>
+                                <span class="fast-launch-status">Protótipo 2D</span>
+                            </div>
+                        </a>
+                        <a href="javascript:void(0)" onclick="selectGameInInspector('soundtrack')" class="fast-launch-item" title="Trilha Sonora">
+                            <img src="imagens/preview.png" alt="OST" class="fast-launch-thumb">
+                            <div class="fast-launch-info">
+                                <span class="fast-launch-name">Trilha Sonora</span>
+                                <span class="fast-launch-status">Sound Design</span>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Widget de Status da Sidebar -->
+                <div class="sidebar-status-widget">
+                    <img src="imagens/unique_soul_capa.png" alt="Miniatura Unique Soul" class="widget-thumb">
+                    <div class="widget-details">
+                        <div class="widget-title">Unique Soul</div>
+                        <div class="widget-subtitle">Alpha 0.1 em Produção</div>
+                        <div class="widget-progress">
+                            <div class="widget-progress-bar"></div>
+                        </div>
+                    </div>
+                </div>
+            </aside>
+
+            <!-- ÁREA PRINCIPAL GAMESTORE (EXPLORADOR DE JOGOS) -->
+            <main class="gamestore-main">
+                
+                <!-- TOPBAR -->
+                <header class="gamestore-topbar">
+                    <button type="button" class="mobile-sidebar-toggle" onclick="toggleMobileSidebar()" aria-label="Abrir menu">
+                        <i class="fas fa-bars" aria-hidden="true"></i>
+                    </button>
+
+                    <div class="topbar-search-wrapper">
+                        <i class="fas fa-search topbar-search-icon" aria-hidden="true"></i>
+                        <input type="text" id="catalogSearch" class="topbar-search-input" placeholder="Buscar jogos, mecânicas, novidades..." aria-label="Buscar jogos">
+                    </div>
+
+                    <div class="topbar-actions">
+                        <a href="javascript:void(0)" onclick="alert('Jogos favoritados: ' + (wishlist.length ? wishlist.join(', ') : 'Nenhum ainda. Clique no coração dos jogos para favoritar!'))" class="topbar-btn" title="Favoritos / Lista de Desejos" aria-label="Lista de desejos">
+                            <i class="fas fa-heart" aria-hidden="true"></i>
+                            <span class="topbar-badge" id="wishlistCount" style="display: none;">0</span>
+                        </a>
+
+                        <button type="button" class="topbar-btn" id="themeToggle" aria-label="Alternar tema" title="Alternar tema claro/escuro">
+                            <i class="fas fa-moon" aria-hidden="true"></i>
+                        </button>
+
+                        <div class="topbar-profile-container">
+                            <!-- Atualizado dinamicamente pelo firebase-config.js -->
+                        </div>
+                    </div>
+                </header>
+
+                <!-- INSPETOR EM DESTAQUE DO JOGO SELECIONADO -->
+                <section class="game-inspector-section" id="gameInspector" aria-label="Detalhes do Jogo Selecionado" style="background:rgba(20,5,35,0.9);border:1px solid rgba(0,255,255,0.3);border-radius:24px;overflow:hidden;box-shadow:0 20px 50px rgba(0,0,0,0.5);">
+                    <div style="position:relative;height:240px;width:100%;overflow:hidden;">
+                        <img src="imagens/unique_soul_cenario.png" alt="Banner do jogo" id="inspectorBanner" style="width:100%;height:100%;object-fit:cover;filter:brightness(0.7);">
+                        <div style="position:absolute;inset:0;background:linear-gradient(180deg, rgba(20,5,35,0.1) 0%, rgba(20,5,35,0.95) 100%);"></div>
+                    </div>
+
+                    <div style="padding:0 32px 32px;margin-top:-60px;position:relative;display:flex;flex-direction:column;gap:20px;">
+                        <div style="display:flex;gap:24px;align-items:flex-end;flex-wrap:wrap;">
+                            <img src="imagens/unique_soul_capa.png" alt="Capa do Jogo" id="inspectorCover" style="width:140px;height:190px;border-radius:18px;object-fit:cover;box-shadow:0 15px 35px rgba(0,0,0,0.7);border:2px solid rgba(255,255,255,0.2);background:#110221;">
+                            <div style="flex:1;min-width:260px;">
+                                <div style="display:flex;gap:8px;margin-bottom:8px;flex-wrap:wrap;">
+                                    <span class="spotlight-badge" id="inspectorVersion">ALPHA 0.1</span>
+                                    <span class="spotlight-cat" id="inspectorGenre">RPG / INVESTIGAÇÃO</span>
+                                    <span class="modal-pill" id="inspectorStatus" style="background:rgba(255,255,255,0.08);border-color:rgba(255,255,255,0.2);">Em Desenvolvimento</span>
+                                </div>
+                                <h1 style="font-family:'Orbitron',sans-serif;font-size:clamp(1.6rem,3vw,2.4rem);font-weight:900;color:var(--white);letter-spacing:1px;margin:0 0 6px;" id="inspectorTitle">Unique Soul</h1>
+                                <p style="font-size:0.95rem;color:var(--yellow);font-weight:600;" id="inspectorTagline">Toda alma tem uma história. Qual será a sua?</p>
+                            </div>
+                            <div style="display:flex;gap:10px;">
+                                <button type="button" class="btn-spotlight-heart" onclick="toggleWishlist(currentInspectorGameId, this)" title="Favoritar este jogo">
+                                    <i class="fas fa-heart"></i>
+                                </button>
+                                <a href="https://discord.gg/qrk3CjQ5HF" target="_blank" rel="noopener noreferrer" class="btn-spotlight-play">
+                                    <i class="fab fa-discord"></i> Comunidade
+                                </a>
+                            </div>
+                        </div>
+
+                        <!-- ABAS DO INSPETOR -->
+                        <div class="modal-tabs-nav" style="margin-top:10px;">
+                            <button type="button" class="modal-tab-btn active" data-tab="inspectorTabOverview" onclick="switchInspectorTab('inspectorTabOverview')">Visão Geral & História</button>
+                            <button type="button" class="modal-tab-btn" data-tab="inspectorTabMechanics" onclick="switchInspectorTab('inspectorTabMechanics')">Mecânicas</button>
+                            <button type="button" class="modal-tab-btn" data-tab="inspectorTabGallery" onclick="switchInspectorTab('inspectorTabGallery')">Galeria de Artes</button>
+                            <button type="button" class="modal-tab-btn" data-tab="inspectorTabFeedback" onclick="switchInspectorTab('inspectorTabFeedback')" style="color:var(--cyan);"><i class="fas fa-comment-dots"></i> Feedback / Playtest</button>
+                        </div>
+
+                        <!-- Conteúdo Aba Visão Geral -->
+                        <div class="modal-tab-content active" id="inspectorTabOverview">
+                            <p id="inspectorDesc" style="font-size:0.95rem;line-height:1.7;margin-bottom:16px;">Unique Soul é um mergulho em um universo onde você precisa enfrentar julgamentos e preconceitos. Seus fragmentos de memória são a única bússola, além da curiosidade. Em um mundo onde todos possuem suas próprias cores, você assume o papel de um fragmento que busca entender sua origem.</p>
+                            
+                            <!-- Container para Blocos Customizáveis do CMS -->
+                            <div id="inspectorCmsBlocksContainer" style="margin-top:20px;"></div>
+
+                            <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(200px, 1fr));gap:14px;background:rgba(255,255,255,0.03);padding:16px;border-radius:14px;border:1px solid rgba(255,255,255,0.08);margin-top:18px;">
+                                <div>
+                                    <span style="font-size:0.75rem;color:rgba(255,255,255,0.5);text-transform:uppercase;">Plataformas</span>
+                                    <div style="font-weight:700;color:var(--white);" id="inspectorPlatforms">PC (Steam & Epic Games)</div>
+                                </div>
+                                <div>
+                                    <span style="font-size:0.75rem;color:rgba(255,255,255,0.5);text-transform:uppercase;">Gênero</span>
+                                    <div style="font-weight:700;color:var(--cyan);">RPG / Investigação 2D</div>
+                                </div>
+                                <div>
+                                    <span style="font-size:0.75rem;color:rgba(255,255,255,0.5);text-transform:uppercase;">Desenvolvedor</span>
+                                    <div style="font-weight:700;color:var(--yellow);">Qualquer Coisa Rápido</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Conteúdo Aba Mecânicas -->
+                        <div class="modal-tab-content" id="inspectorTabMechanics">
+                            <div class="modal-mechanics-grid" id="inspectorMechanicsGrid">
+                                <!-- Gerado dinamicamente -->
+                            </div>
+                        </div>
+
+                        <!-- Conteúdo Aba Galeria -->
+                        <div class="modal-tab-content" id="inspectorTabGallery">
+                            <div class="modal-gallery-grid" id="inspectorGalleryGrid">
+                                <!-- Gerado dinamicamente -->
+                            </div>
+                        </div>
+
+                        <!-- Conteúdo Aba Feedback / Playtest -->
+                        <div class="modal-tab-content" id="inspectorTabFeedback">
+                            <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(168,85,247,0.3);border-radius:14px;padding:24px;max-width:620px;">
+                                <h4 style="color:#06b6d4;font-family:'Orbitron',sans-serif;margin-top:0;"><i class="fas fa-bug"></i> Ajude nosso estúdio a evoluir este protótipo!</h4>
+                                <p style="font-size:0.88rem;color:rgba(255,255,255,0.8);line-height:1.5;">Testou a mecânica ou viu algo estranho? Deixe seu comentário, relato de bug ou sugestão para a equipe da Qualquer Coisa Rápido.</p>
+                                
+                                <form id="playtestFeedbackForm" onsubmit="submitPlaytestFeedback(event)">
+                                    <div style="margin-bottom:12px;">
+                                        <label style="display:block;font-size:0.8rem;text-transform:uppercase;color:#c084fc;margin-bottom:4px;">Seu Nome / Apelido</label>
+                                        <input type="text" id="feedbackPlayerName" placeholder="Ex: Player123" style="width:100%;box-sizing:border-box;background:#0d0519;border:1px solid rgba(255,255,255,0.15);padding:10px 14px;border-radius:8px;color:#fff;outline:none;">
+                                    </div>
+                                    <div style="margin-bottom:12px;">
+                                        <label style="display:block;font-size:0.8rem;text-transform:uppercase;color:#c084fc;margin-bottom:4px;">Tipo de Feedback</label>
+                                        <select id="feedbackTypeSelect" style="width:100%;box-sizing:border-box;background:#0d0519;border:1px solid rgba(255,255,255,0.15);padding:10px 14px;border-radius:8px;color:#fff;outline:none;">
+                                            <option value="opiniao">Opinião Geral / Elogio</option>
+                                            <option value="bug">Reportar um Bug / Falha</option>
+                                            <option value="sugestao">Sugestão de Mecânica / Ideia</option>
+                                        </select>
+                                    </div>
+                                    <div style="margin-bottom:16px;">
+                                        <label style="display:block;font-size:0.8rem;text-transform:uppercase;color:#c084fc;margin-bottom:4px;">Mensagem</label>
+                                        <textarea id="feedbackMessageText" rows="4" required placeholder="Conte em detalhes o que achou ou como reproduzir o bug..." style="width:100%;box-sizing:border-box;background:#0d0519;border:1px solid rgba(255,255,255,0.15);padding:10px 14px;border-radius:8px;color:#fff;outline:none;resize:vertical;"></textarea>
+                                    </div>
+                                    <div id="feedbackStatusMsg" style="display:none;margin-bottom:14px;font-size:0.9rem;padding:10px;border-radius:6px;background:rgba(16,185,129,0.15);border:1px solid #10b981;color:#10b981;"></div>
+                                    <button type="submit" id="feedbackSubmitBtn" style="background:linear-gradient(135deg,#7c3aed,#06b6d4);border:none;padding:12px 24px;border-radius:8px;color:#fff;font-family:'Orbitron',sans-serif;font-weight:700;cursor:pointer;letter-spacing:1px;">
+                                        ENVIAR FEEDBACK
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+
+                    </div>
+                </section>
+
+                <!-- CATÁLOGO COMPLETO DE JOGOS & PROJETOS COM CAPINHAS -->
+                <section class="gamestore-catalog-section" aria-label="Catálogo com Capinhas">
+                    <div class="catalog-header-bar">
+                        <div class="catalog-title-group">
+                            <h3>TODOS OS PROJETOS DO ESTÚDIO</h3>
+                            <p>Clique em qualquer capinha abaixo para trocar o jogo em destaque no inspetor</p>
+                        </div>
+
+                        <div class="catalog-filter-tabs">
+                            <button type="button" class="catalog-tab active" data-filter="all">Todos</button>
+                            <button type="button" class="catalog-tab" data-filter="rpg">RPG</button>
+                            <button type="button" class="catalog-tab" data-filter="cenario">Cenários</button>
+                            <button type="button" class="catalog-tab" data-filter="acao">Ação</button>
+                            <button type="button" class="catalog-tab" data-filter="musica">Música</button>
+                        </div>
+                    </div>
+
+                    <!-- GRID DE CARDS COM AS CAPINHAS DOS JOGOS -->
+                    <div class="catalog-games-grid">
+                        
+                        <!-- CARD 1: UNIQUE SOUL -->
+                        <article class="catalog-game-card" data-category="rpg" onclick="selectGameInInspector('unique-soul')">
+                            <div class="card-media-wrapper">
+                                <img src="imagens/unique_soul_capa.png" alt="Capa Oficial de Unique Soul" class="card-cover-img" loading="lazy">
+                                <span class="card-tag-badge">ALPHA 0.1</span>
+                                <button type="button" class="card-fav-btn" onclick="event.stopPropagation(); toggleWishlist('unique-soul', this);" title="Favoritar Unique Soul" aria-label="Favoritar">
+                                    <i class="fas fa-heart" aria-hidden="true"></i>
+                                </button>
+                            </div>
+                            <div class="card-content-block">
+                                <span class="card-genre-text">RPG / Investigação 2D</span>
+                                <h4 class="card-game-title">Unique Soul</h4>
+                                <p class="card-game-desc">O projeto principal do estúdio. Enfrente julgamentos e desvende os fragmentos de sua memória.</p>
+                                <div class="card-bottom-row">
+                                    <span class="card-status-pill"><i class="fas fa-star" style="color:var(--yellow);margin-right:4px;"></i> Em Destaque</span>
+                                    <span class="card-action-btn"><i class="fas fa-eye"></i> Inspecionar</span>
+                                </div>
+                            </div>
+                        </article>
+
+                        <!-- CARD 2: A CATEDRAL DAS CORES -->
+                        <article class="catalog-game-card" data-category="cenario rpg" onclick="selectGameInInspector('catedral-almas')">
+                            <div class="card-media-wrapper">
+                                <img src="imagens/unique_soul_cenario.png" alt="Cenário dos Vitrais" class="card-cover-img" loading="lazy">
+                                <span class="card-tag-badge" style="color:var(--cyan);">CENÁRIO</span>
+                                <button type="button" class="card-fav-btn" onclick="event.stopPropagation(); toggleWishlist('catedral-almas', this);" title="Favoritar Cenário" aria-label="Favoritar">
+                                    <i class="fas fa-heart" aria-hidden="true"></i>
+                                </button>
+                            </div>
+                            <div class="card-content-block">
+                                <span class="card-genre-text">Atmosfera & Lore</span>
+                                <h4 class="card-game-title">A Catedral das Cores</h4>
+                                <p class="card-game-desc">A arquitetura sagrada dos vitrais góticos que representam a alma dos personagens.</p>
+                                <div class="card-bottom-row">
+                                    <span class="card-status-pill"><i class="fas fa-palette" style="color:var(--magenta);margin-right:4px;"></i> Arte Autoral</span>
+                                    <span class="card-action-btn"><i class="fas fa-eye"></i> Inspecionar</span>
+                                </div>
+                            </div>
+                        </article>
+
+                        <!-- CARD 3: QUALQUER COISA QUEST -->
+                        <article class="catalog-game-card" data-category="acao" onclick="selectGameInInspector('qualquer-coisa-quest')">
+                            <div class="card-media-wrapper" style="background:#1d0733;">
+                                <img src="imagens/Qualquer_coisa_corpo_inteiro.png" alt="Mascote Qualquer Coisa" class="card-cover-img" style="object-fit:contain;padding:12px;" loading="lazy">
+                                <span class="card-tag-badge" style="color:var(--magenta);">PROTÓTIPO</span>
+                                <button type="button" class="card-fav-btn" onclick="event.stopPropagation(); toggleWishlist('qualquer-coisa-quest', this);" title="Favoritar Mascote" aria-label="Favoritar">
+                                    <i class="fas fa-heart" aria-hidden="true"></i>
+                                </button>
+                            </div>
+                            <div class="card-content-block">
+                                <span class="card-genre-text">Ação / Roguelite 2D</span>
+                                <h4 class="card-game-title">Qualquer Coisa Quest</h4>
+                                <p class="card-game-desc">O mascote oficial em um desafio veloz com múltiplas habilidades e combos.</p>
+                                <div class="card-bottom-row">
+                                    <span class="card-status-pill"><i class="fas fa-gamepad" style="color:var(--yellow);margin-right:4px;"></i> Spin-off</span>
+                                    <span class="card-action-btn"><i class="fas fa-eye"></i> Inspecionar</span>
+                                </div>
+                            </div>
+                        </article>
+
+                        <!-- CARD 4: UNIQUE SOUL SOUNDTRACK -->
+                        <article class="catalog-game-card" data-category="musica rpg" onclick="selectGameInInspector('soundtrack')">
+                            <div class="card-media-wrapper">
+                                <img src="imagens/preview.png" alt="Trilha Sonora Unique Soul" class="card-cover-img" loading="lazy">
+                                <span class="card-tag-badge" style="color:#d8c2ff;">ÁUDIO</span>
+                                <button type="button" class="card-fav-btn" onclick="event.stopPropagation(); toggleWishlist('soundtrack', this);" title="Favoritar Trilha" aria-label="Favoritar">
+                                    <i class="fas fa-heart" aria-hidden="true"></i>
+                                </button>
+                            </div>
+                            <div class="card-content-block">
+                                <span class="card-genre-text">Sound Design & Músicas</span>
+                                <h4 class="card-game-title">Unique Soul: OST</h4>
+                                <p class="card-game-desc">Trilha sonora original composta para acompanhar a imersão e os combates da narrativa.</p>
+                                <div class="card-bottom-row">
+                                    <span class="card-status-pill"><i class="fas fa-music" style="color:var(--cyan);margin-right:4px;"></i> Em Produção</span>
+                                    <span class="card-action-btn"><i class="fas fa-eye"></i> Inspecionar</span>
+                                </div>
+                            </div>
+                        </article>
+
+                    </div>
+                </section>
+
+                <!-- FOOTER INTERNO DA GAMESTORE -->
+                <footer class="gamestore-footer" style="margin-top:20px;padding-top:20px;border-top:1px solid rgba(255,255,255,0.08);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:16px;">
+                    <p style="font-size:0.85rem;color:rgba(255,255,255,0.6);">&copy; 2026 Qualquer Coisa Rápido • Feito com paixão pela equipe indie.</p>
+                    <div style="display:flex;gap:14px;">
+                        <a href="https://discord.gg/qrk3CjQ5HF" target="_blank" rel="noopener noreferrer" style="color:var(--cyan);text-decoration:none;font-size:0.85rem;"><i class="fab fa-discord"></i> Discord</a>
+                        <a href="https://www.instagram.com/qualquer_coisas_oficial/" target="_blank" rel="noopener noreferrer" style="color:var(--magenta);text-decoration:none;font-size:0.85rem;"><i class="fab fa-instagram"></i> Instagram</a>
+                    </div>
+                </footer>
+
+            </main>
+        </div>
+    </div>
+
+    <!-- SCRIPT DE SELEÇÃO DO INSPETOR EM JOGO.HTML -->
+    <script>
+        let currentInspectorGameId = 'unique-soul';
+        let currentBackendGameData = null;
+
+        async function selectGameInInspector(gameId) {
+            currentInspectorGameId = gameId;
+            const fallbackData = GAMES_DATA[gameId] || GAMES_DATA['unique-soul'];
+
+            const banner = document.getElementById('inspectorBanner');
+            const cover = document.getElementById('inspectorCover');
+            const title = document.getElementById('inspectorTitle');
+            const genre = document.getElementById('inspectorGenre');
+            const version = document.getElementById('inspectorVersion');
+            const status = document.getElementById('inspectorStatus');
+            const tagline = document.getElementById('inspectorTagline');
+            const desc = document.getElementById('inspectorDesc');
+            const platforms = document.getElementById('inspectorPlatforms');
+            const mechanicsGrid = document.getElementById('inspectorMechanicsGrid');
+            const galleryGrid = document.getElementById('inspectorGalleryGrid');
+            const blocksContainer = document.getElementById('inspectorCmsBlocksContainer');
+
+            // Preenche dados padrão primeiro
+            if (banner) banner.src = fallbackData.banner;
+            if (cover) cover.src = fallbackData.cover;
+            if (title) title.textContent = fallbackData.title;
+            if (genre) genre.textContent = fallbackData.genre;
+            if (version) version.textContent = fallbackData.version;
+            if (status) status.textContent = fallbackData.status;
+            if (tagline) tagline.textContent = fallbackData.tagline;
+            if (desc) desc.textContent = fallbackData.description;
+            if (platforms) platforms.textContent = fallbackData.platforms;
+
+            if (mechanicsGrid) {
+                mechanicsGrid.innerHTML = fallbackData.mechanics.map(m => `
+                    <div class="modal-mechanic-card">
+                        <i class="fas ${m.icon}" aria-hidden="true"></i>
+                        <h4>${m.title}</h4>
+                        <p style="font-size: 0.8rem; opacity: 0.8;">${m.desc}</p>
+                    </div>
+                `).join('');
+            }
+
+            if (galleryGrid) {
+                galleryGrid.innerHTML = fallbackData.gallery.map(g => `
+                    <div class="modal-gallery-item">
+                        <img src="${g.src}" alt="${g.caption}" loading="lazy">
+                    </div>
+                `).join('');
+            }
+
+            // Tenta buscar blocos customizáveis do CMS no Backend
+            if (window.ApiClient && blocksContainer) {
+                try {
+                    const gameFromApi = await window.ApiClient.getGameBySlug(gameId);
+                    currentBackendGameData = gameFromApi;
+
+                    if (gameFromApi && gameFromApi.blocks && gameFromApi.blocks.length > 0) {
+                        blocksContainer.innerHTML = gameFromApi.blocks.map(b => {
+                            const c = b.content || {};
+                            if (b.block_type === 'roadmap' && c.steps) {
+                                return `
+                                    <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(6,182,212,0.3);border-radius:10px;padding:16px;margin-top:16px;">
+                                        <h4 style="color:#06b6d4;font-family:'Orbitron',sans-serif;margin:0 0 10px 0;"><i class="fas fa-tasks"></i> ${c.heading || 'Progresso'}</h4>
+                                        <div style="display:flex;flex-direction:column;gap:8px;">
+                                            ${c.steps.map(s => `
+                                                <div style="display:flex;justify-content:space-between;align-items:center;background:rgba(0,0,0,0.3);padding:8px 12px;border-radius:6px;font-size:0.85rem;">
+                                                    <span>${s.phase}</span>
+                                                    <span style="font-size:0.75rem;padding:2px 8px;border-radius:4px;background:${s.status==='concluido'?'#10b981':(s.status==='em_progresso'?'#f59e0b':'#6b7280')};color:#fff;">
+                                                        ${s.status.toUpperCase()}
+                                                    </span>
+                                                </div>
+                                            `).join('')}
+                                        </div>
+                                    </div>
+                                `;
+                            }
+                            if (b.block_type === 'features' && c.items) {
+                                return `
+                                    <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(168,85,247,0.3);border-radius:10px;padding:16px;margin-top:16px;">
+                                        <h4 style="color:#c084fc;font-family:'Orbitron',sans-serif;margin:0 0 10px 0;"><i class="fas fa-star"></i> ${c.heading || 'Destaques'}</h4>
+                                        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px;">
+                                            ${c.items.map(it => `
+                                                <div style="background:rgba(0,0,0,0.25);padding:10px;border-radius:6px;">
+                                                    <strong style="color:#06b6d4;font-size:0.88rem;display:block;">${it.title}</strong>
+                                                    <p style="font-size:0.8rem;color:#cbd5e1;margin:4px 0 0;">${it.desc}</p>
+                                                </div>
+                                            `).join('')}
+                                        </div>
+                                    </div>
+                                `;
+                            }
+                            return '';
+                        }).join('');
+                    } else {
+                        blocksContainer.innerHTML = '';
+                    }
+                } catch (e) {
+                    blocksContainer.innerHTML = '';
+                }
+            }
+
+            switchInspectorTab('inspectorTabOverview');
+
+            const inspector = document.getElementById('gameInspector');
+            if (inspector) {
+                inspector.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            }
+        }
+
+        function switchInspectorTab(tabId) {
+            document.querySelectorAll('#gameInspector .modal-tab-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.getAttribute('data-tab') === tabId);
+            });
+            document.querySelectorAll('#gameInspector .modal-tab-content').forEach(content => {
+                content.classList.toggle('active', content.id === tabId);
+            });
+        }
+
+        async function submitPlaytestFeedback(e) {
+            e.preventDefault();
+            const playerName = document.getElementById('feedbackPlayerName').value.trim() || 'Jogador';
+            const type = document.getElementById('feedbackTypeSelect').value;
+            const message = document.getElementById('feedbackMessageText').value.trim();
+            const statusMsg = document.getElementById('feedbackStatusMsg');
+            const submitBtn = document.getElementById('feedbackSubmitBtn');
+
+            if (!message) return;
+
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'ENVIANDO...';
+
+            try {
+                if (!window.ApiClient) throw new Error('Servidor offline');
+                const gameId = currentBackendGameData ? currentBackendGameData.id : null;
+                await window.ApiClient.sendFeedback({
+                    game_id: gameId,
+                    player_name: playerName,
+                    type,
+                    message
+                });
+
+                statusMsg.textContent = '✅ Feedback enviado com sucesso! A equipe agradece o seu apoio.';
+                statusMsg.style.display = 'block';
+                document.getElementById('playtestFeedbackForm').reset();
+            } catch (err) {
+                statusMsg.textContent = '❌ Erro ao enviar feedback: ' + err.message;
+                statusMsg.style.display = 'block';
+                statusMsg.style.color = '#f87171';
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'ENVIAR FEEDBACK';
+            }
+        }
+
+        window.selectGameInInspector = selectGameInInspector;
+        window.switchInspectorTab = switchInspectorTab;
+        window.submitPlaytestFeedback = submitPlaytestFeedback;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const initialGame = urlParams.get('game') || 'unique-soul';
+            selectGameInInspector(initialGame);
+        });
+    </script>
+    <!-- CLIENTE API & CONEXÃO BACKEND LOCAL -->
+    <script src="scripts/api-client.js"></script>
+    <script src="scripts/firebase-config.js"></script>
+    <script src="scripts/script.js"></script>
+</body>
+</html>

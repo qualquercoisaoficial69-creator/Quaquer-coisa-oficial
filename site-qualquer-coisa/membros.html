@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Membros da Equipe | Qualquer Coisa Rápido</title>
+    <meta name="description" content="Conheça os membros e desenvolvedores da Qualquer Coisa Rápido, equipe indie responsável por Unique Soul.">
+    <meta name="theme-color" content="#2d0a4e">
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Membros da Equipe | Qualquer Coisa Rápido">
+    <meta property="og:description" content="Brenno, Enzo, Gustavo, Iza, João e Maryssa criando Unique Soul.">
+    <meta property="og:image" content="imagens/preview.png">
+    <link rel="stylesheet" href="css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&family=Orbitron:wght@600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="icon" type="image/png" href="imagens/favicon.png">
+    <link rel="shortcut icon" href="favicon.ico">
+</head>
+<body class="gamestore-body">
+
+    <div class="gamestore-wrapper">
+        <div class="gamestore-window">
+            
+            <!-- SIDEBAR GAMESTORE PADRONIZADA -->
+            <aside class="gamestore-sidebar">
+                <button type="button" class="sidebar-mobile-close-btn" onclick="toggleMobileSidebar(false)" aria-label="Fechar menu">
+                    <i class="fas fa-times" aria-hidden="true"></i>
+                </button>
+                <div>
+                    <a href="home.html" class="sidebar-brand" aria-label="Qualquer Coisa Rápido Início">
+                        <img src="imagens/Logo_colorida.png" alt="Logo da Qualquer Coisa Rápido" class="sidebar-logo">
+                        <div class="sidebar-brand-text">
+                            <h2>QUALQUER COISA</h2>
+                            <span>ESTÚDIO INDIE</span>
+                        </div>
+                    </a>
+
+                    <nav class="sidebar-nav" aria-label="Menu principal">
+                        <span class="sidebar-nav-title">Navegação</span>
+                        <a href="home.html" class="sidebar-link">
+                            <i class="fas fa-home" aria-hidden="true"></i>
+                            <span>Início</span>
+                        </a>
+                        <a href="jogo.html" class="sidebar-link">
+                            <i class="fas fa-th-large" aria-hidden="true"></i>
+                            <span>Catálogo de Jogos</span>
+                        </a>
+                        <a href="sobre.html" class="sidebar-link">
+                            <i class="fas fa-book-open" aria-hidden="true"></i>
+                            <span>Sobre Nós</span>
+                        </a>
+                        <a href="membros.html" class="sidebar-link active" aria-current="page">
+                            <i class="fas fa-users" aria-hidden="true"></i>
+                            <span>Membros</span>
+                        </a>
+                        <a href="cms.html" class="sidebar-link creator-only" title="Painel de Criação e Edição de Posts" style="display: none;">
+                            <i class="fas fa-feather-alt" aria-hidden="true"></i>
+                            <span>Painel CMS</span>
+                        </a>
+                    </nav>
+
+                    <div class="fast-launch-section">
+                        <span class="sidebar-nav-title">Destaques Rápidos</span>
+                        <a href="home.html?game=unique-soul" class="fast-launch-item" title="Ver Unique Soul">
+                            <img src="imagens/unique_soul_capa.png" alt="Capa Unique Soul" class="fast-launch-thumb">
+                            <div class="fast-launch-info">
+                                <span class="fast-launch-name">Unique Soul</span>
+                                <span class="fast-launch-status">Destaque • Alpha 0.1</span>
+                            </div>
+                        </a>
+                        <a href="home.html?game=catedral-almas" class="fast-launch-item" title="Ver A Catedral">
+                            <img src="imagens/unique_soul_cenario.png" alt="Cenário Catedral" class="fast-launch-thumb">
+                            <div class="fast-launch-info">
+                                <span class="fast-launch-name">A Catedral</span>
+                                <span class="fast-launch-status">Arte Conceitual</span>
+                            </div>
+                        </a>
+                        <a href="home.html?game=qualquer-coisa-quest" class="fast-launch-item" title="Ver Qualquer Coisa Quest">
+                            <img src="imagens/Qualquer_coisa_corpo_inteiro.png" alt="Mascote" class="fast-launch-thumb">
+                            <div class="fast-launch-info">
+                                <span class="fast-launch-name">O Mascote</span>
+                                <span class="fast-launch-status">Protótipo 2D</span>
+                            </div>
+                        </a>
+                        <a href="https://discord.gg/qrk3CjQ5HF" target="_blank" rel="noopener noreferrer" class="fast-launch-item" title="Comunidade Discord">
+                            <div class="fast-launch-thumb" style="display:flex;align-items:center;justify-content:center;background:#5865f2;color:#fff;">
+                                <i class="fab fa-discord"></i>
+                            </div>
+                            <div class="fast-launch-info">
+                                <span class="fast-launch-name">Discord</span>
+                                <span class="fast-launch-status">Comunidade Indie</span>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="sidebar-status-widget">
+                    <img src="imagens/unique_soul_capa.png" alt="Miniatura Unique Soul" class="widget-thumb">
+                    <div class="widget-details">
+                        <div class="widget-title">Unique Soul</div>
+                        <div class="widget-subtitle">Alpha 0.1 em Produção</div>
+                        <div class="widget-progress">
+                            <div class="widget-progress-bar"></div>
+                        </div>
+                    </div>
+                </div>
+            </aside>
+
+            <!-- CONTEÚDO PRINCIPAL (GAMESTORE - SEÇÃO MEMBROS) -->
+            <main class="gamestore-main">
+                
+                <!-- TOPBAR PADRONIZADA -->
+                <header class="gamestore-topbar">
+                    <button type="button" class="mobile-sidebar-toggle" onclick="toggleMobileSidebar()" aria-label="Abrir menu">
+                        <i class="fas fa-bars" aria-hidden="true"></i>
+                    </button>
+
+                    <div class="topbar-search-wrapper">
+                        <i class="fas fa-search topbar-search-icon" aria-hidden="true"></i>
+                        <input type="text" id="memberSearchInput" class="topbar-search-input" placeholder="Buscar membros, especialidades, desenvolvedores..." aria-label="Buscar membros" oninput="filterMembers(this.value)">
+                    </div>
+
+                    <div class="topbar-actions">
+                        <a href="javascript:void(0)" onclick="alert('Jogos favoritados: ' + (wishlist.length ? wishlist.join(', ') : 'Nenhum ainda. Clique no coração dos jogos para favoritar!'))" class="topbar-btn" title="Favoritos / Lista de Desejos" aria-label="Lista de desejos">
+                            <i class="fas fa-heart" aria-hidden="true"></i>
+                            <span class="topbar-badge" id="wishlistCount" style="display: none;">0</span>
+                        </a>
+
+                        <button type="button" class="topbar-btn" id="themeToggle" aria-label="Alternar tema" title="Alternar tema claro/escuro">
+                            <i class="fas fa-moon" aria-hidden="true"></i>
+                        </button>
+
+                        <div class="topbar-profile-container">
+                            <!-- Atualizado dinamicamente pelo firebase-config.js -->
+                        </div>
+                    </div>
+                </header>
+
+                <!-- CONTEÚDO DOS MEMBROS NO PADRÃO GAMESTORE -->
+                <section class="gamestore-members-section" aria-label="Membros da Qualquer Coisa Rápido">
+                    
+                    <!-- Hero Banner da Página de Membros -->
+                    <div class="members-store-hero">
+                        <div class="members-store-hero-content">
+                            <span class="about-store-badge"><i class="fas fa-users"></i> EQUIPE INDIE OFICIAL</span>
+                            <h1 class="about-store-title">Conheça os Criadores <span>de Unique Soul</span></h1>
+                            <p class="about-store-tagline">Desenvolvedores, artistas, designers de som e roteiristas trabalhando juntos para dar vida ao universo da <strong>Qualquer Coisa Rápido</strong>.</p>
+                        </div>
+                        <div class="members-stats-chips">
+                            <div class="member-chip"><i class="fas fa-user-friends"></i> 6 Integrantes</div>
+                            <div class="member-chip"><i class="fas fa-gamepad"></i> 100% Autoral</div>
+                            <div class="member-chip"><i class="fas fa-code-branch"></i> Estúdio Indie</div>
+                        </div>
+                    </div>
+
+                    <!-- LISTA DE BANNERS DOS MEMBROS NO PADRÃO DA PÁGINA -->
+                    <div class="gamestore-members-list" id="membersListContainer">
+                        
+                        <!-- 01 BRENNO -->
+                        <div class="gamestore-member-banner" style="--member-accent: #00ffff;" data-name="brenno" data-role="fullstack dev desenvolvedor">
+                            <div class="member-banner-bg" style="background-image: url('imagens/campo.gif');"></div>
+                            <div class="member-banner-overlay"></div>
+                            <div class="member-banner-content">
+                                <span class="member-banner-number">01</span>
+                                <div class="member-banner-text">
+                                    <div class="member-banner-header">
+                                        <h3>Brenno</h3>
+                                        <span class="member-tag-badge" style="background: rgba(0, 255, 255, 0.2); border-color: #00ffff; color: #00ffff;">
+                                            <i class="fas fa-code"></i> Desenvolvedor Full Stack
+                                        </span>
+                                    </div>
+                                    <p class="member-banner-bio">Programação de sistemas web, integrações interativas, arquitetura de software e desenvolvimento geral.</p>
+                                    <div class="member-skill-tags">
+                                        <span>HTML5/CSS3</span>
+                                        <span>JavaScript</span>
+                                        <span>Firebase</span>
+                                        <span>Git</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="member-banner-avatar-wrap">
+                                <img src="imagens/brenno-icon.jpeg" class="member-banner-avatar" alt="Brenno" loading="lazy">
+                            </div>
+                        </div>
+
+                        <!-- 02 ENZO -->
+                        <div class="gamestore-member-banner" style="--member-accent: #ff007f;" data-name="enzo" data-role="programador game design">
+                            <div class="member-banner-bg" style="background-image: url('imagens/enzo-bg.jpg');"></div>
+                            <div class="member-banner-overlay"></div>
+                            <div class="member-banner-content">
+                                <span class="member-banner-number">02</span>
+                                <div class="member-banner-text">
+                                    <div class="member-banner-header">
+                                        <h3>Enzo</h3>
+                                        <span class="member-tag-badge" style="background: rgba(255, 0, 127, 0.2); border-color: #ff007f; color: #ff007f;">
+                                            <i class="fas fa-terminal"></i> Programador & Game Design
+                                        </span>
+                                    </div>
+                                    <p class="member-banner-bio">Construção da lógica de jogo, balanceamento de desafios e estruturação dos pilares centrais de gameplay.</p>
+                                    <div class="member-skill-tags">
+                                        <span>Gameplay</span>
+                                        <span>Game Design</span>
+                                        <span>C#</span>
+                                        <span>Lógica</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="member-banner-avatar-wrap">
+                                <img src="imagens/en.jpg" class="member-banner-avatar" alt="Enzo" loading="lazy">
+                            </div>
+                        </div>
+
+                        <!-- 03 GUSTAVO -->
+                        <div class="gamestore-member-banner" style="--member-accent: #3399ff;" data-name="gustavo" data-role="mecanicas programador">
+                            <div class="member-banner-bg" style="background-image: url('imagens/gus-banner.gif');"></div>
+                            <div class="member-banner-overlay"></div>
+                            <div class="member-banner-content">
+                                <span class="member-banner-number">03</span>
+                                <div class="member-banner-text">
+                                    <div class="member-banner-header">
+                                        <h3>Gustavo</h3>
+                                        <span class="member-tag-badge" style="background: rgba(51, 153, 255, 0.2); border-color: #3399ff; color: #3399ff;">
+                                            <i class="fas fa-cogs"></i> Mecânicas & Programação
+                                        </span>
+                                    </div>
+                                    <p class="member-banner-bio">Desenvolvimento de controles responsivos, física de movimento e implementação de sistemas dinâmicos.</p>
+                                    <div class="member-skill-tags">
+                                        <span>Física 2D</span>
+                                        <span>Mecânicas</span>
+                                        <span>Hitboxes</span>
+                                        <span>Dev</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="member-banner-avatar-wrap">
+                                <img src="imagens/gus.jpg" class="member-banner-avatar" alt="Gustavo" loading="lazy">
+                            </div>
+                        </div>
+
+                        <!-- 04 IZA -->
+                        <div class="gamestore-member-banner" style="--member-accent: #00ff88;" data-name="iza" data-role="artes visuais cenarios">
+                            <div class="member-banner-bg" style="background-image: url('imagens/iza-banner.gif');"></div>
+                            <div class="member-banner-overlay"></div>
+                            <div class="member-banner-content">
+                                <span class="member-banner-number">04</span>
+                                <div class="member-banner-text">
+                                    <div class="member-banner-header">
+                                        <h3>Iza</h3>
+                                        <span class="member-tag-badge" style="background: rgba(0, 255, 136, 0.2); border-color: #00ff88; color: #00ff88;">
+                                            <i class="fas fa-palette"></i> Artes Visuais & Cenários
+                                        </span>
+                                    </div>
+                                    <p class="member-banner-bio">Criação dos cenários imersivos de Unique Soul, iluminação ambiente e identidade artística autoral.</p>
+                                    <div class="member-skill-tags">
+                                        <span>Cenários</span>
+                                        <span>Concept Art</span>
+                                        <span>Pixel Art</span>
+                                        <span>Iluminação</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="member-banner-avatar-wrap">
+                                <img src="imagens/iz.jpg" class="member-banner-avatar" alt="Iza" loading="lazy">
+                            </div>
+                        </div>
+
+                        <!-- 05 JOÃO -->
+                        <div class="gamestore-member-banner" style="--member-accent: #ff9900;" data-name="joao" data-role="sound design trilha sonora audio">
+                            <div class="member-banner-bg" style="background-image: url('imagens/joao-banner.jpg');"></div>
+                            <div class="member-banner-overlay"></div>
+                            <div class="member-banner-content">
+                                <span class="member-banner-number">05</span>
+                                <div class="member-banner-text">
+                                    <div class="member-banner-header">
+                                        <h3>João</h3>
+                                        <span class="member-tag-badge" style="background: rgba(255, 153, 0, 0.2); border-color: #ff9900; color: #ff9900;">
+                                            <i class="fas fa-music"></i> Sonorização & Trilhas Sonoras
+                                        </span>
+                                    </div>
+                                    <p class="member-banner-bio">Composição de trilhas sonoras atmosféricas, efeitos sonoros (SFX) e programação de áudio adaptativo.</p>
+                                    <div class="member-skill-tags">
+                                        <span>Trilhas Sonoras</span>
+                                        <span>SFX</span>
+                                        <span>Sound Design</span>
+                                        <span>Áudio</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="member-banner-avatar-wrap">
+                                <img src="imagens/jo.jpg" class="member-banner-avatar" alt="João" loading="lazy">
+                            </div>
+                        </div>
+
+                        <!-- 06 MARYSSA -->
+                        <div class="gamestore-member-banner" style="--member-accent: #ff3344;" data-name="maryssa" data-role="artes visuais roteirista sound design social media">
+                            <div class="member-banner-bg" style="background-image: url('imagens/yoki.gif');"></div>
+                            <div class="member-banner-overlay"></div>
+                            <div class="member-banner-content">
+                                <span class="member-banner-number">06</span>
+                                <div class="member-banner-text">
+                                    <div class="member-banner-header">
+                                        <h3>Maryssa</h3>
+                                        <span class="member-tag-badge" style="background: rgba(255, 51, 68, 0.2); border-color: #ff3344; color: #ff3344;">
+                                            <i class="fas fa-feather-alt"></i> Arte, Roteiro & Social Media
+                                        </span>
+                                    </div>
+                                    <p class="member-banner-bio">Narrativa profunda de Unique Soul, redação de diálogos, arte conceitual e gestão de mídias sociais.</p>
+                                    <div class="member-skill-tags">
+                                        <span>Roteiro</span>
+                                        <span>Narrativa</span>
+                                        <span>Ilustração</span>
+                                        <span>Social Media</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="member-banner-avatar-wrap">
+                                <img src="imagens/ma.jpg" class="member-banner-avatar" alt="Maryssa" loading="lazy">
+                            </div>
+                        </div>
+
+                    </div>
+                </section>
+
+                <!-- FOOTER INTERNO DA GAMESTORE PADRONIZADO -->
+                <footer class="gamestore-footer" style="margin-top:40px;padding-top:20px;border-top:1px solid rgba(255,255,255,0.08);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:16px;">
+                    <p style="font-size:0.85rem;color:rgba(255,255,255,0.6);">&copy; 2026 Qualquer Coisa Rápido • Feito com paixão pela equipe indie.</p>
+                    <div style="display:flex;gap:14px;">
+                        <a href="https://discord.gg/qrk3CjQ5HF" target="_blank" rel="noopener noreferrer" style="color:var(--cyan);text-decoration:none;font-size:0.85rem;"><i class="fab fa-discord"></i> Discord</a>
+                        <a href="https://www.instagram.com/qualquer_coisas_oficial/" target="_blank" rel="noopener noreferrer" style="color:var(--magenta);text-decoration:none;font-size:0.85rem;"><i class="fab fa-instagram"></i> Instagram</a>
+                    </div>
+                </footer>
+
+            </main>
+        </div>
+    </div>
+
+    <!-- CLIENTE API & CONEXÃO BACKEND LOCAL -->
+    <script src="scripts/api-client.js"></script>
+    <script src="scripts/firebase-config.js"></script>
+    <script src="scripts/script.js"></script>
+</body>
+</html>
