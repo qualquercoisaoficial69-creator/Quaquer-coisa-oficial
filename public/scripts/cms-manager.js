@@ -172,12 +172,7 @@ window.loadGameBlocksForEditor = async function(gameSlug) {
     try {
         const game = await window.ApiClient.getGameBySlug(gameSlug);
         activeEditorGame = game;
-        activeEditorBlocks = (game.blocks && game.blocks.length > 0) ? game.blocks : [
-            { block_type: 'hero', content: PREBUILT_TEMPLATES.hero.create(game) },
-            { block_type: 'synopsis', content: PREBUILT_TEMPLATES.synopsis.create() },
-            { block_type: 'features', content: PREBUILT_TEMPLATES.features.create() },
-            { block_type: 'roadmap', content: PREBUILT_TEMPLATES.roadmap.create() }
-        ];
+        activeEditorBlocks = (game.blocks && game.blocks.length > 0) ? game.blocks : [];
         renderCanvaStudio();
     } catch (err) {
         container.innerHTML = `<div style="color:#f87171;padding:20px;text-align:center;">Erro ao carregar: ${err.message}</div>`;

@@ -160,6 +160,14 @@ const ApiClient = {
     });
   },
 
+  async updatePost(postId, postData) {
+    return await this._authFetch(`${API_BASE}/posts/${postId}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(postData)
+    });
+  },
+
   async likePost(postId) {
     return await this._authFetch(`${API_BASE}/posts/${postId}/like`, {
       method: 'POST'

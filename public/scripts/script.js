@@ -1022,7 +1022,7 @@ window.togglePostLike = async function(postId, button) {
     }
 
     const posts = getStoredPosts();
-    const post = posts.find(p => p.id === postId);
+    const post = posts.find(p => String(p.id) === String(postId));
     const counterElem = document.getElementById('likes-count-' + postId);
 
     if (button) button.disabled = true;
@@ -1128,7 +1128,7 @@ async function loadAndRenderComments(postId) {
     if (!body || !footer) return;
 
     const posts = getStoredPosts();
-    const post = posts.find(p => p.id === postId) || {};
+    const post = posts.find(p => String(p.id) === String(postId)) || {};
 
     try {
         let comments = [];
@@ -1303,7 +1303,7 @@ window.submitPostComment = async function(e) {
         
         const counterText = document.getElementById('comments-count-text-' + activeCommentPostId);
         const posts = getStoredPosts();
-        const post = posts.find(p => p.id === activeCommentPostId);
+        const post = posts.find(p => String(p.id) === String(activeCommentPostId));
         if (post) {
             post.commentsCount = (post.commentsCount || 0) + 1;
             if (counterText) counterText.textContent = 'Ver todos os ' + post.commentsCount + ' comentários';
@@ -1431,7 +1431,7 @@ async function executeDeletePost(postId) {
     }
     try {
         await window.deletePostFromFirestore(postId);
-        saveStoredPosts(getStoredPosts().filter(post => post.id !== postId));
+        saveStoredPosts(getStoredPosts().filter(post => String(post.id) !== String(postId)));
     } catch (error) {
         alert(`Não foi possível excluir a publicação: ${error.message}`);
         return;
@@ -1498,7 +1498,7 @@ window.openEditPostModal = function(postId) {
     }
 
     const posts = getStoredPosts();
-    const post = posts.find(p => p.id === postId);
+    const post = posts.find(p => String(p.id) === String(postId));
     if (!post) return;
 
     const modal = document.getElementById('cmsPostModal');
@@ -1674,7 +1674,7 @@ window.handleSavePost = async function(e) {
     };
 
     const posts = getStoredPosts();
-    const existingPost = editId ? posts.find(post => post.id === editId) : null;
+    const existingPost = editId ? posts.find(post => String(post.id) === String(editId)) : null;
     const postToSync = {
         ...(existingPost || {}),
         id: editId || `post-${Date.now()}`,
@@ -1692,13 +1692,13 @@ window.handleSavePost = async function(e) {
     };
 
     try {
-        await window.savePostToFirestore(postToSync);
+        const syncRes = await window.savePostToFirestore(postToSync); if (syncRes && syncRes.postId) { postToSync.id = syncRes.postId; }
     } catch (error) {
         alert(`Não foi possível salvar a publicação: ${error.message}`);
         return;
     }
     const nextPosts = editId
-        ? posts.map(post => post.id === editId ? postToSync : post)
+        ? posts.map(post => String(post.id) === String(editId) ? postToSync : post)
         : [postToSync, ...posts];
     saveStoredPosts(nextPosts);
 
@@ -1706,6 +1706,8 @@ window.handleSavePost = async function(e) {
 
     if (window.renderCmsDashboard) window.renderCmsDashboard();
     if (window.renderCmsCarousel) window.renderCmsCarousel();
+    if (window.renderInstagramFeed) window.renderInstagramFeed();
+    if (window.initCarousel) window.initCarousel();
 
     if (commitData) {
         alert(`🎉 Publicação postada com sucesso!\n\n🚀 COMMIT REALIZADO NO GITHUB:\n• Arquivo: ${commitData.path}\n• Commit SHA: ${commitData.commitSha.substring(0, 7)}\n• Mensagem: cms: upload da mídia via Creator Studio\n\nAcesse o repositório para conferir o novo commit!`);

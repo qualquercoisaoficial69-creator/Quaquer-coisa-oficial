@@ -569,9 +569,14 @@ window.savePostToFirestore = async function(post) {
     caption: post.caption,
     author_name: post.author || 'Equipe Qualquer Coisa',
     type: post.category || 'devlog',
+    show_in_carousel: post.showInCarousel === true,
     media: [{ media_url: mediaUrl, media_type: 'image', order_index: 0 }]
   };
 
+  const isExisting = post.id && !String(post.id).startsWith('post-') && !String(post.id).startsWith('post_');
+  if (isExisting) {
+    return await window.ApiClient.updatePost(post.id, payload);
+  }
   return await window.ApiClient.createPost(payload);
 };
 
@@ -606,7 +611,7 @@ window.loadPostsFromApi = async function() {
       likes: p.likes_count || 0,
       commentsCount: p.comments_count || 0,
       date: p.created_at || new Date().toISOString(),
-      showInCarousel: true
+      showInCarousel: !!p.show_in_carousel
     }));
 
     window.dispatchEvent(new CustomEvent('qc_posts_loaded', { detail: adapted }));

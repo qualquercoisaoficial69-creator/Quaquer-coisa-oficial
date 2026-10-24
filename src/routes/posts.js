@@ -110,24 +110,25 @@ router.get('/:id', async (req, res) => {
 });
 
 // 3. Criar Novo Post no Feed (CMS - Protegido)
-// Aceita: author_name, game_id, title, caption, type, media: [{ media_url, media_type }]
+// Aceita: author_name, game_id, title, caption, type, show_in_carousel, media: [{ media_url, media_type }]
 router.post('/', authenticateToken, async (req, res) => {
   try {
-    const { author_name, game_id, title, caption, type, media } = req.body;
+    const { author_name, game_id, title, caption, type, show_in_carousel, media } = req.body;
 
     if (!caption) {
       return res.status(400).json({ error: 'A legenda do post é obrigatória.' });
     }
 
     const result = await run(`
-      INSERT INTO posts (author_name, game_id, title, caption, type)
-      VALUES (?, ?, ?, ?, ?)
+      INSERT INTO posts (author_name, game_id, title, caption, type, show_in_carousel)
+      VALUES (?, ?, ?, ?, ?, ?)
     `, [
       author_name || req.user.username || 'Dev Team',
       game_id || null,
       title || null,
       caption,
-      type || 'devlog'
+      type || 'devlog',
+      show_in_carousel ? 1 : 0
     ]);
 
     const postId = result.lastID;
@@ -154,6 +155,61 @@ router.post('/', authenticateToken, async (req, res) => {
     });
   } catch (error) {
     res.status(500).json({ error: 'Erro ao criar post: ' + error.message });
+  }
+});
+
+// 3.1 Atualizar Post Existente (CMS - Protegido)
+router.put('/:id', authenticateToken, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { author_name, game_id, title, caption, type, show_in_carousel, media } = req.body;
+
+    if (!caption) {
+      return res.status(400).json({ error: 'A legenda do post é obrigatória.' });
+    }
+
+    const post = await getOne('SELECT id FROM posts WHERE id = ?', [id]);
+    if (!post) {
+      return res.status(404).json({ error: 'Post não encontrado.' });
+    }
+
+    await run(`
+      UPDATE posts
+      SET author_name = ?, game_id = ?, title = ?, caption = ?, type = ?, show_in_carousel = ?
+      WHERE id = ?
+    `, [
+      author_name || req.user.username || 'Dev Team',
+      game_id || null,
+      title || null,
+      caption,
+      type || 'devlog',
+      show_in_carousel ? 1 : 0,
+      id
+    ]);
+
+    // Atualiza mídias associadas se fornecidas
+    if (Array.isArray(media) && media.length > 0) {
+      await run('DELETE FROM post_media WHERE post_id = ?', [id]);
+      for (let i = 0; i < media.length; i++) {
+        const item = media[i];
+        await run(`
+          INSERT INTO post_media (post_id, media_url, media_type, order_index)
+          VALUES (?, ?, ?, ?)
+        `, [
+          id,
+          item.media_url,
+          item.media_type || 'image',
+          item.order_index ?? i
+        ]);
+      }
+    }
+
+    res.json({
+      message: 'Post atualizado com sucesso!',
+      postId: Number(id)
+    });
+  } catch (error) {
+    res.status(500).json({ error: 'Erro ao atualizar post: ' + error.message });
   }
 });
 
@@ -200,6 +256,11 @@ router.post('/:id/like', authenticateToken, async (req, res) => {
 router.delete('/:id', authenticateToken, async (req, res) => {
   try {
     const { id } = req.params;
+    // Excluir dependências para integridade referencial
+    await run('DELETE FROM post_media WHERE post_id = ?', [id]);
+    await run('DELETE FROM post_likes WHERE post_id = ?', [id]);
+    await run('DELETE FROM comment_likes WHERE comment_id IN (SELECT id FROM comments WHERE post_id = ?)', [id]);
+    await run('DELETE FROM comments WHERE post_id = ?', [id]);
     await run('DELETE FROM posts WHERE id = ?', [id]);
     res.json({ message: 'Post excluído com sucesso!' });
   } catch (error) {

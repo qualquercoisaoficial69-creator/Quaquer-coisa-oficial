@@ -111,6 +111,7 @@ export const initDatabase = () => {
         caption TEXT NOT NULL,
         type TEXT DEFAULT 'devlog',
         likes_count INTEGER DEFAULT 0,
+        show_in_carousel INTEGER DEFAULT 0,
         created_at DATETIME DEFAULT CURRENT_TIMESTAMP
       )`,
       `CREATE TABLE IF NOT EXISTS post_media (
@@ -168,6 +169,7 @@ export const initDatabase = () => {
     try { await client.execute(`ALTER TABLE comments ADD COLUMN author_avatar TEXT DEFAULT NULL`); } catch (e) {}
     try { await client.execute(`ALTER TABLE comments ADD COLUMN user_id INTEGER DEFAULT NULL`); } catch (e) {}
     try { await client.execute(`ALTER TABLE comments ADD COLUMN likes_count INTEGER DEFAULT 0`); } catch (e) {}
+    try { await client.execute(`ALTER TABLE posts ADD COLUMN show_in_carousel INTEGER DEFAULT 0`); } catch (e) {}
 
     // Sincronização / Migração de membros da equipe (Substituição Enzo -> Gaby e remoção de João)
     try {
@@ -176,6 +178,26 @@ export const initDatabase = () => {
       await client.execute(`UPDATE team_members SET order_index = 5 WHERE name = 'Maryssa'`);
     } catch (syncErr) {
       console.warn('Aviso ao sincronizar membros da equipe:', syncErr.message);
+    }
+
+    // Limpeza solicitada pelo criador para começar do zero ("postar as coisas do zero")
+    try {
+      await client.execute(`CREATE TABLE IF NOT EXISTS _system_flags (flag_key TEXT PRIMARY KEY)`);
+      const wipedAlready = await client.execute(`SELECT flag_key FROM _system_flags WHERE flag_key = 'clean_slate_v1'`);
+      if (wipedAlready.rows.length === 0) {
+        console.log('🧹 Executando limpeza geral de posts, mídias, comentários, feedbacks e blocos de jogos para início limpo...');
+        try { await client.execute(`DELETE FROM comments`); } catch (e) {}
+        try { await client.execute(`DELETE FROM comment_likes`); } catch (e) {}
+        try { await client.execute(`DELETE FROM post_likes`); } catch (e) {}
+        try { await client.execute(`DELETE FROM post_media`); } catch (e) {}
+        try { await client.execute(`DELETE FROM posts`); } catch (e) {}
+        try { await client.execute(`DELETE FROM game_blocks`); } catch (e) {}
+        try { await client.execute(`DELETE FROM feedbacks`); } catch (e) {}
+        try { await client.execute(`INSERT INTO _system_flags (flag_key) VALUES ('clean_slate_v1')`); } catch (e) {}
+        console.log('✨ Banco de dados limpo com sucesso! Pronto para postar do zero.');
+      }
+    } catch (cleanErr) {
+      console.warn('Aviso ao executar limpeza de inicialização:', cleanErr.message);
     }
 
     // Auto-seed: Se o banco estiver vazio (ex: primeiro deploy na nuvem / Vercel)
@@ -208,13 +230,11 @@ export const initDatabase = () => {
           });
         }
 
-        const g1 = await client.execute({
+        await client.execute({
           sql: `INSERT INTO games (title, slug, tagline, status, genre, cover_image, banner_image, accent_color)
                 VALUES ('Unique Soul', 'unique-soul', 'Uma jornada narrativa através de dimensões espirituais e mistérios ancestrais.', 'alpha', 'Ação & Aventura 2D / RPG', 'imagens/unique_soul_capa.png', 'imagens/unique_soul_cenario.png', '#a855f7')`,
           args: []
         });
-
-        const uniqueSoulId = Number(g1.lastInsertRowid);
 
         await client.execute({
           sql: `INSERT INTO games (title, slug, tagline, status, genre, cover_image, banner_image, accent_color)
@@ -228,26 +248,7 @@ export const initDatabase = () => {
           args: []
         });
 
-        // Post inicial do feed
-        const p1 = await client.execute({
-          sql: `INSERT INTO posts (author_name, game_id, title, caption, type, likes_count)
-                VALUES ('Equipe Qualquer Coisa', ?, 'Primeiro vislumbre da Catedral das Almas!', 'Hoje estamos revelando a primeira concept art finalizada da Catedral! Foram semanas ajustando a iluminação e texturas. O que acharam da paleta? 💜✨ #UniqueSoul #gamedev #indiegame', 'devlog', 58)`,
-          args: [uniqueSoulId]
-        });
-
-        const postId = Number(p1.lastInsertRowid);
-
-        await client.execute({
-          sql: `INSERT INTO post_media (post_id, media_url, media_type, order_index) VALUES (?, 'imagens/unique_soul_cenario.png', 'image', 1)`,
-          args: [postId]
-        });
-
-        await client.execute({
-          sql: `INSERT INTO comments (post_id, author_name, content) VALUES (?, 'Seguidor Indie', 'Essa atmosfera tá espetacular! Ansioso demais pra testar.')`,
-          args: [postId]
-        });
-
-        console.log('✅ Auto-seed concluído com sucesso!');
+        console.log('✅ Auto-seed de usuários e jogos concluído!');
       }
     } catch (seedErr) {
       console.warn('Auto-seed ignorado ou já executado:', seedErr.message);
