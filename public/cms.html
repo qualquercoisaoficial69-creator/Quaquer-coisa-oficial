@@ -313,14 +313,22 @@
                 <div class="cms-form-media-col">
                     <label class="cms-form-label">Mídia da Publicação (Imagem / GIF / Banner)</label>
                     
-                    <div class="cms-media-preview-box" id="cmsMediaDropzone">
+                    <div class="cms-media-preview-box" id="cmsMediaDropzone" onclick="document.getElementById('cmsMediaFileInput').click()">
                         <img src="imagens/unique_soul_cenario.png" alt="Prévia da Mídia" id="cmsMediaPreviewImg" class="cms-preview-image">
                         <div class="cms-media-overlay" id="cmsMediaDropPrompt">
-                            <i class="fas fa-cloud-upload-alt"></i>
-                            <span>Clique para carregar mídia ou arraste aqui</span>
-                            <small>PNG, JPG, GIF ou WebP • até 3 MB</small>
+                            <i class="fas fa-camera" style="font-size:2rem;margin-bottom:6px;"></i>
+                            <span>Clique para abrir fotos ou câmera</span>
+                            <small>Imagens do dispositivo ou arquivos do computador</small>
                         </div>
                         <input type="file" id="cmsMediaFileInput" accept="image/*" style="display:none;" onchange="handleMediaFileSelect(event)">
+                    </div>
+
+                    <label for="cmsMediaFileInput" style="display:inline-flex;align-items:center;justify-content:center;gap:8px;background:linear-gradient(135deg,rgba(124,58,237,0.4),rgba(6,182,212,0.3));border:1px solid #7c3aed;color:#fff;padding:10px 16px;border-radius:10px;cursor:pointer;font-size:0.85rem;font-weight:700;margin-top:10px;width:100%;box-sizing:border-box;box-shadow:0 0 15px rgba(124,58,237,0.2);">
+                        <i class="fas fa-camera"></i> Escolher Foto do Dispositivo / Câmera
+                    </label>
+
+                    <div id="cmsMediaUploadStatus" style="display:none;font-size:0.82rem;color:var(--cyan);margin-top:6px;text-align:center;align-items:center;justify-content:center;gap:6px;">
+                        <i class="fas fa-spinner fa-spin"></i> Enviando imagem via API...
                     </div>
 
                     <div class="github-sync-indicator" id="githubSyncIndicator">

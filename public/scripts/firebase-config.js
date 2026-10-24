@@ -372,7 +372,18 @@ function renderProfileModal() {
       <form id="editProfileForm" onsubmit="saveUserProfile(event)">
         <div class="indie-profile-avatar-preview-wrap">
           <img id="profilePreviewAvatar" src="imagens/Logo_colorida.png" alt="Avatar" class="indie-profile-avatar-img">
-          <span style="font-size:0.75rem;color:rgba(255,255,255,0.6);">Avatares rápidos dos integrantes ou insira um link:</span>
+          
+          <!-- BOTÃO PARA ESCOLHER FOTO DO DISPOSITIVO OU CÂMERA -->
+          <label for="profileDeviceFileInput" class="btn-profile-upload" style="background:linear-gradient(135deg,#7c3aed,#06b6d4);color:#fff;padding:8px 16px;border-radius:20px;font-size:0.8rem;cursor:pointer;font-weight:700;display:inline-flex;align-items:center;gap:8px;box-shadow:0 0 15px rgba(6,182,212,0.3);transition:transform 0.15s;">
+            <i class="fas fa-camera"></i>
+            <span>Escolher Foto do Dispositivo / Câmera</span>
+            <input type="file" id="profileDeviceFileInput" accept="image/*" style="display:none;" onchange="handleProfilePhotoUpload(event)">
+          </label>
+          <div id="profileUploadProgress" style="display:none;font-size:0.78rem;color:#06b6d4;align-items:center;gap:6px;">
+            <i class="fas fa-spinner fa-spin"></i> Enviando foto para o banco de dados...
+          </div>
+
+          <span style="font-size:0.75rem;color:rgba(255,255,255,0.6);margin-top:4px;">Ou escolha um avatar rápido dos integrantes:</span>
           <div class="indie-profile-presets-row">
             <img src="imagens/brenno-icon.jpeg" class="indie-profile-preset-thumb" onclick="selectProfileAvatarPreset('imagens/brenno-icon.jpeg')" title="Brenno">
             <img src="imagens/en.jpg" class="indie-profile-preset-thumb" onclick="selectProfileAvatarPreset('imagens/en.jpg')" title="Gaby">
@@ -417,6 +428,39 @@ window.selectProfileAvatarPreset = function(url) {
   const preview = document.getElementById('profilePreviewAvatar');
   if (input) input.value = url;
   if (preview) preview.src = url;
+};
+
+window.handleProfilePhotoUpload = async function(e) {
+  const file = e.target.files ? e.target.files[0] : null;
+  if (!file) return;
+
+  const progress = document.getElementById('profileUploadProgress');
+  const preview = document.getElementById('profilePreviewAvatar');
+  const input = document.getElementById('profileAvatarUrlInput');
+  const errBox = document.getElementById('profileErrorMessage');
+
+  if (errBox) errBox.style.display = 'none';
+  if (progress) progress.style.display = 'flex';
+
+  try {
+    if (!window.ApiClient) throw new Error('ApiClient não disponível');
+    const uploadedUrl = await window.ApiClient.uploadImage(file, 600);
+    if (input) input.value = uploadedUrl;
+    if (preview) preview.src = uploadedUrl;
+    if (progress) {
+      progress.innerHTML = '<i class="fas fa-check-circle" style="color:#10b981;"></i> Foto carregada com sucesso!';
+      setTimeout(() => {
+        progress.style.display = 'none';
+        progress.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Enviando foto para o banco de dados...';
+      }, 2500);
+    }
+  } catch (err) {
+    if (errBox) {
+      errBox.textContent = 'Erro ao enviar foto: ' + err.message;
+      errBox.style.display = 'block';
+    }
+    if (progress) progress.style.display = 'none';
+  }
 };
 
 window.openProfileEditModal = function() {

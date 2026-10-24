@@ -1644,25 +1644,16 @@ window.handleSavePost = async function(e) {
         return;
     }
 
-    // Se o criador selecionou uma imagem local do computador, envia o commit real pro GitHub!
-    if (pendingMediaFile) {
-        const originalBtnHtml = submitBtn ? submitBtn.innerHTML : '';
+    if (pendingMediaFile && window.ApiClient) {
         try {
             if (submitBtn) {
                 submitBtn.disabled = true;
-                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Enviando commit para o GitHub...';
+                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Enviando imagem via API...';
             }
-
-            commitData = await commitMediaToGitHub(pendingMediaFile, title);
-            mediaUrl = commitData.rawUrl;
+            mediaUrl = await window.ApiClient.uploadImage(pendingMediaFile, 1200);
             pendingMediaFile = null;
-        } catch (err) {
-            if (submitBtn) {
-                submitBtn.disabled = false;
-                submitBtn.innerHTML = originalBtnHtml;
-            }
-            alert('Aviso sobre o envio para o GitHub:\n' + err.message);
-            return;
+        } catch (uploadErr) {
+            console.warn('Erro no upload da mídia:', uploadErr);
         } finally {
             if (submitBtn) {
                 submitBtn.disabled = false;
@@ -1670,6 +1661,7 @@ window.handleSavePost = async function(e) {
             }
         }
     }
+   
 
     const authorAvatars = {
         'Brenno': 'imagens/brenno-icon.jpeg',
@@ -1722,24 +1714,36 @@ window.handleSavePost = async function(e) {
     }
 };
 
-// Manipulação de mídia (Arquivo local ou URL)
-window.handleMediaFileSelect = function(e) {
-    const file = e.target.files[0];
-    if (file) {
-        if (file.size > 3 * 1024 * 1024) {
-            alert('Escolha uma imagem de até 3 MB para publicar.');
-            e.target.value = '';
-            return;
+// Manipulação de mídia (Arquivo local, Câmera do dispositivo ou URL via API)
+window.handleMediaFileSelect = async function(e) {
+    const file = e.target.files ? e.target.files[0] : null;
+    if (!file) return;
+
+    const preview = document.getElementById('cmsMediaPreviewImg');
+    const input = document.getElementById('cmsMediaUrlInput');
+    const status = document.getElementById('cmsMediaUploadStatus');
+    const syncIndicator = document.getElementById('githubSyncIndicator');
+
+    if (status) {
+        status.style.display = 'flex';
+        status.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Enviando imagem via API para o estúdio...';
+    }
+
+    try {
+        if (!window.ApiClient) throw new Error('ApiClient não disponível.');
+        const uploadedUrl = await window.ApiClient.uploadImage(file, 1200);
+        if (preview) preview.src = uploadedUrl;
+        if (input) input.value = uploadedUrl;
+        if (syncIndicator) syncIndicator.classList.add('active');
+        pendingMediaFile = null;
+
+        if (status) {
+            status.innerHTML = '<i class="fas fa-check-circle" style="color:#10b981;"></i> Imagem enviada e pronta para publicação!';
+            setTimeout(() => { status.style.display = 'none'; }, 2500);
         }
-        pendingMediaFile = file;
-        const reader = new FileReader();
-        reader.onload = function(evt) {
-            const preview = document.getElementById('cmsMediaPreviewImg');
-            if (preview) preview.src = evt.target.result;
-            const syncIndicator = document.getElementById('githubSyncIndicator');
-            if (syncIndicator) syncIndicator.classList.add('active');
-        };
-        reader.readAsDataURL(file);
+    } catch (err) {
+        alert('Erro ao enviar imagem: ' + err.message);
+        if (status) status.style.display = 'none';
     }
 };
 

@@ -238,7 +238,59 @@ const ApiClient = {
     });
   },
 
-  // --- UPLOAD DE MÍDIAS ---
+  // --- UPLOAD DE MÍDIAS & COMPRESSÃO INTELIGENTE ---
+  compressImageFile(file, maxWidth = 1000, quality = 0.82) {
+    return new Promise((resolve) => {
+      if (!file || !file.type || !file.type.startsWith('image/')) {
+        return resolve(file);
+      }
+      if (file.type === 'image/gif') {
+        return resolve(file);
+      }
+
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const img = new Image();
+        img.onload = () => {
+          let width = img.width;
+          let height = img.height;
+
+          if (width > maxWidth || height > maxWidth) {
+            if (width > height) {
+              height = Math.round((height * maxWidth) / width);
+              width = maxWidth;
+            } else {
+              width = Math.round((width * maxWidth) / height);
+              height = maxWidth;
+            }
+          }
+
+          const canvas = document.createElement('canvas');
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0, width, height);
+
+          canvas.toBlob((blob) => {
+            if (blob) {
+              const compressedFile = new File([blob], file.name ? file.name.replace(/\.[^/.]+$/, '.jpg') : 'upload.jpg', {
+                type: 'image/jpeg',
+                lastModified: Date.now()
+              });
+              resolve(compressedFile);
+            } else {
+              resolve(file);
+            }
+          }, 'image/jpeg', quality);
+        };
+        img.onerror = () => resolve(file);
+        img.src = e.target.result;
+      };
+      reader.onerror = () => resolve(file);
+      reader.readAsDataURL(file);
+    });
+  },
+
   async uploadFile(file) {
     const formData = new FormData();
     formData.append('file', file);
@@ -252,6 +304,12 @@ const ApiClient = {
     const data = await res.json();
     if (!res.ok) throw new Error(data.error || 'Erro ao fazer upload.');
     return data;
+  },
+
+  async uploadImage(file, maxWidth = 1000) {
+    const compressed = await this.compressImageFile(file, maxWidth);
+    const res = await this.uploadFile(compressed);
+    return res.url;
   }
 };
 
