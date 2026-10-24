@@ -232,6 +232,11 @@ window.loadPostsFromApi = async function() {
     if (!window.ApiClient) return [];
     try {
         const rawPosts = await window.ApiClient.getPosts();
+        if (!Array.isArray(rawPosts)) {
+            console.warn('Aviso: A resposta da API de publicações não é uma lista:', rawPosts);
+            return [];
+        }
+
         // Converte o formato do backend para o formato esperado pelo script.js
         const adapted = rawPosts.map(p => ({
             id: p.id,

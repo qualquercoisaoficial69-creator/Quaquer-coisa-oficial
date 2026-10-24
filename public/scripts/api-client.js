@@ -106,8 +106,14 @@ const ApiClient = {
   // --- FEED SOCIAL / DEVLOG (ESTILO INSTAGRAM) ---
   async getPosts(gameId = null) {
     const url = gameId ? `${API_BASE}/posts?game_id=${gameId}` : `${API_BASE}/posts`;
-    const res = await fetch(url);
-    return await res.json();
+    try {
+      const res = await fetch(url);
+      const data = await res.json();
+      return Array.isArray(data) ? data : [];
+    } catch (e) {
+      console.warn('Erro ao carregar posts:', e);
+      return [];
+    }
   },
 
   async getPostById(id) {
