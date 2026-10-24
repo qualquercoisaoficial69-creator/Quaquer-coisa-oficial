@@ -25,11 +25,10 @@ const seed = async () => {
   await run(`DELETE FROM team_members`);
   const members = [
     { name: 'Brenno', role: 'Desenvolvedor Full Stack & Game Design', bio: 'Programação de sistemas, integrações interativas, arquitetura de software e desenvolvimento geral.', avatar: 'imagens/brenno-icon.jpeg', order: 1 },
-    { name: 'Enzo', role: 'Programador & Game Design', bio: 'Construção da lógica de jogo, balanceamento de desafios e estruturação dos pilares centrais de gameplay.', avatar: 'imagens/en.jpg', order: 2 },
+    { name: 'Gaby', role: 'Programadora & Game Design', bio: 'Construção da lógica de jogo, balanceamento de desafios e estruturação dos pilares centrais de gameplay.', avatar: 'imagens/en.jpg', order: 2 },
     { name: 'Gustavo', role: 'Mecânicas & Programação', bio: 'Implementação de combate, inteligência artificial e refinamento de controles do jogador.', avatar: 'imagens/gus.jpg', order: 3 },
     { name: 'Iza', role: 'Diretora de Arte & Ilustradora', bio: 'Criação dos cenários imersivos da Catedral, iluminação dramática e conceito visual.', avatar: 'imagens/iz.jpg', order: 4 },
-    { name: 'João', role: 'Sound Designer & Áudio', bio: 'Composição de atmosferas sonoras sombrias, trilha dinâmica e efeitos imersivos.', avatar: 'imagens/jo.jpg', order: 5 },
-    { name: 'Maryssa', role: 'UI/UX & Roteirista', bio: 'Estruturação da experiência de usuário, design de interfaces e narrativa profunda do mundo.', avatar: 'imagens/ma.jpg', order: 6 },
+    { name: 'Maryssa', role: 'UI/UX & Roteirista', bio: 'Estruturação da experiência de usuário, design de interfaces e narrativa profunda do mundo.', avatar: 'imagens/ma.jpg', order: 5 },
   ];
 
   for (const m of members) {

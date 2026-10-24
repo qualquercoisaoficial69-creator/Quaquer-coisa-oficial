@@ -13,7 +13,7 @@ npm install
 ```
 
 ### 2. Popular o banco com os dados reais do estúdio (Seed)
-Cria o banco SQLite (`database.sqlite`) e popula com os 6 desenvolvedores (Brenno, Enzo, Gustavo, Iza, João, Maryssa), os jogos (*Unique Soul*, *A Catedral*, *Qualquer Coisa Quest*) e postagens com comentários:
+Cria o banco SQLite (`database.sqlite`) e popula com os 5 desenvolvedores (Brenno, Gaby, Gustavo, Iza, Maryssa), os jogos (*Unique Soul*, *A Catedral*, *Qualquer Coisa Quest*) e postagens com comentários:
 ```bash
 npm run seed
 ```

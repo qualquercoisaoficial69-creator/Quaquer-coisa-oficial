@@ -1375,10 +1375,10 @@ window.handleSavePost = async function(e) {
 
     const authorAvatars = {
         'Brenno': 'imagens/brenno-icon.jpeg',
-        'Enzo': 'imagens/en.jpg',
+        'Gaby': 'imagens/en.jpg',
         'Iza': 'imagens/iz.jpg',
         'Gustavo': 'imagens/gus.jpg',
-        'João': 'imagens/jo.jpg',
+
         'Maryssa': 'imagens/ma.jpg',
         'Qualquer Coisa Rápido': 'imagens/Logo_colorida.png'
     };
