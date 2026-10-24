@@ -60,6 +60,64 @@ router.post('/login', async (req, res) => {
   }
 });
 
+// Lista de e-mails autorizados para acesso de Administrador/Criador via Google
+const AUTHORIZED_GOOGLE_EMAILS = [
+  'qualquercoisaoficial69@gmail.com',
+  'brennofirminodejesus@gmail.com',
+  'izam20027@gmail.com',
+  'gtofrazatto@gmail.com'
+];
+
+// Login via Google Authentication
+router.post('/google', async (req, res) => {
+  try {
+    const { email, name, avatar } = req.body;
+    if (!email) {
+      return res.status(400).json({ error: 'E-mail não informado.' });
+    }
+
+    const cleanEmail = email.trim().toLowerCase();
+
+    // Valida se o e-mail está na lista de criadores autorizados
+    if (!AUTHORIZED_GOOGLE_EMAILS.includes(cleanEmail)) {
+      return res.status(403).json({
+        error: `Acesso Negado: O e-mail "${cleanEmail}" não possui permissão de desenvolvedor.`
+      });
+    }
+
+    // Busca ou cria o usuário correspondente no banco
+    let user = await getOne('SELECT * FROM users WHERE LOWER(username) = ?', [cleanEmail]);
+    if (!user) {
+      const insert = await run(
+        'INSERT INTO users (username, password_hash, role) VALUES (?, ?, ?)',
+        [cleanEmail, 'google_authenticated', 'admin']
+      );
+      user = { id: insert.lastID, username: cleanEmail, role: 'admin' };
+    }
+
+    const token = jwt.sign(
+      { id: user.id, username: user.username, role: 'admin' },
+      JWT_SECRET,
+      { expiresIn: '7d' }
+    );
+
+    res.json({
+      message: 'Login realizado com sucesso via Google!',
+      token,
+      user: {
+        id: user.id,
+        username: user.username,
+        email: cleanEmail,
+        displayName: name || user.username.split('@')[0],
+        avatar: avatar || 'imagens/Logo_colorida.png',
+        role: 'admin'
+      }
+    });
+  } catch (error) {
+    res.status(500).json({ error: 'Erro ao processar login via Google: ' + error.message });
+  }
+});
+
 // Registrar primeiro administrador ou membros do time
 router.post('/register', async (req, res) => {
   try {

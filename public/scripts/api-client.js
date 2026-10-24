@@ -41,6 +41,20 @@ const ApiClient = {
     return data;
   },
 
+  async loginWithGoogle(email, name, avatar) {
+    const res = await fetch(`${API_BASE}/auth/google`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, name, avatar })
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Erro ao autenticar com Google.');
+
+    localStorage.setItem('qcr_auth_token', data.token);
+    localStorage.setItem('qcr_user', JSON.stringify(data.user));
+    return data;
+  },
+
   logout() {
     localStorage.removeItem('qcr_auth_token');
     localStorage.removeItem('qcr_user');
