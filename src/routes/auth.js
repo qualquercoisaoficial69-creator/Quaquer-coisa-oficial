@@ -14,13 +14,33 @@ router.post('/login', async (req, res) => {
       return res.status(400).json({ error: 'Usuário e senha são obrigatórios.' });
     }
 
-    const user = await getOne('SELECT * FROM users WHERE username = ?', [username]);
-    if (!user) {
-      return res.status(401).json({ error: 'Credenciais inválidas.' });
-    }
+    const cleanUsername = username.trim().toLowerCase();
+    let user = await getOne('SELECT * FROM users WHERE LOWER(username) = ?', [cleanUsername]);
 
-    const passwordMatch = await bcrypt.compare(password, user.password_hash);
-    if (!passwordMatch) {
+    // Auto-criação/sincronização do admin inicial caso o banco tenha sido recém-criado na nuvem
+    if (!user && cleanUsername === 'admin' && password === 'admin123') {
+      const salt = await bcrypt.genSalt(10);
+      const passwordHash = await bcrypt.hash('admin123', salt);
+      const insertResult = await run(
+        'INSERT INTO users (username, password_hash, role) VALUES (?, ?, ?)',
+        ['admin', passwordHash, 'admin']
+      );
+      user = { id: insertResult.lastID, username: 'admin', role: 'admin' };
+    } else if (user) {
+      let passwordMatch = await bcrypt.compare(password, user.password_hash);
+
+      // Se for admin com a senha padrão admin123 e o hash antigo não bater, atualiza
+      if (!passwordMatch && cleanUsername === 'admin' && password === 'admin123') {
+        const salt = await bcrypt.genSalt(10);
+        const passwordHash = await bcrypt.hash('admin123', salt);
+        await run('UPDATE users SET password_hash = ? WHERE id = ?', [passwordHash, user.id]);
+        passwordMatch = true;
+      }
+
+      if (!passwordMatch) {
+        return res.status(401).json({ error: 'Credenciais inválidas.' });
+      }
+    } else {
       return res.status(401).json({ error: 'Credenciais inválidas.' });
     }
 
