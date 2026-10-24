@@ -894,7 +894,7 @@ window.renderHomeFeed = function(filterCategory = 'all', searchQuery = '') {
                         <button type="button" class="ig-action-btn like-btn ${liked ? 'liked' : ''}" onclick="togglePostLike('${post.id}', this)" aria-label="Curtir">
                             <i class="${liked ? 'fas fa-heart' : 'far fa-heart'}"></i>
                         </button>
-                        <button type="button" class="ig-action-btn" onclick="alert('Os comentários ainda não estão disponíveis.')" aria-label="Comentar">
+                        <button type="button" class="ig-action-btn" onclick="openPostCommentsModal('${post.id}')" aria-label="Comentar">
                             <i class="far fa-comment"></i>
                         </button>
                         <button type="button" class="ig-action-btn" onclick="sharePostLink('${post.id}')" aria-label="Compartilhar">
@@ -915,6 +915,10 @@ window.renderHomeFeed = function(filterCategory = 'all', searchQuery = '') {
                 <div class="ig-caption-block">
                     <h4 class="ig-post-headline">${post.title}</h4>
                     <p class="ig-caption-text">${formatCaptionText(post.caption)}</p>
+                </div>
+                <div class="ig-view-comments-row" onclick="openPostCommentsModal('${post.id}')" style="cursor:pointer;padding:4px 0 10px 0;font-size:0.84rem;color:rgba(255,255,255,0.55);transition:color 0.15s;">
+                    <i class="far fa-comment-dots" style="margin-right:4px;"></i>
+                    <span id="comments-count-text-${post.id}">${(post.commentsCount && post.commentsCount > 0) ? `Ver todos os ${post.commentsCount} comentários` : 'Adicionar um comentário...'}</span>
                 </div>
             </article>
         `;
@@ -1007,55 +1011,349 @@ window.renderCmsDashboard = function(filterCategory = 'all', searchQuery = '') {
     }).join('');
 };
 
-// --- CURTIR / LIKES EM TEMPO REAL ---
+// --- CURTIR / LIKES EM TEMPO REAL ESTILO INSTAGRAM ---
 window.togglePostLike = async function(postId, button) {
+    if (!window.ApiClient?.isAuthenticated()) {
+        alert('Faça login com sua conta para curtir e comentar nas publicações!');
+        if (typeof window.openAdminLoginModal === 'function') {
+            window.openAdminLoginModal();
+        }
+        return;
+    }
+
     const posts = getStoredPosts();
     const post = posts.find(p => p.id === postId);
-    if (!post) return;
+    const counterElem = document.getElementById('likes-count-' + postId);
 
-    const likedIndex = userLikedPosts.indexOf(postId);
-    const counterElem = document.getElementById(`likes-count-${postId}`);
-    if (!window.getCurrentUser?.()) {
-        try {
-            await window.loginWithGoogle();
-        } catch {
-            return;
-        }
-        if (!window.getCurrentUser?.()) return;
-    }
     if (button) button.disabled = true;
     try {
-        const result = await window.updatePostLikesInFirestore(postId);
-        post.likes = Math.max(0, (post.likes || 0) + (result.liked ? 1 : -1));
+        const result = await window.ApiClient.likePost(postId);
+        if (post) {
+            post.likes = result.likes_count;
+        }
+
+        const likedIndex = userLikedPosts.indexOf(postId);
         if (result.liked && likedIndex < 0) userLikedPosts.push(postId);
         if (!result.liked && likedIndex >= 0) userLikedPosts.splice(likedIndex, 1);
+
         if (button) {
             button.classList.toggle('liked', result.liked);
             const icon = button.querySelector('i');
             if (icon) icon.className = result.liked ? 'fas fa-heart' : 'far fa-heart';
         }
-        if (counterElem) counterElem.textContent = post.likes;
+
+        if (counterElem) counterElem.textContent = result.likes_count;
         localStorage.setItem('qc_liked_posts', JSON.stringify(userLikedPosts));
-        saveStoredPosts(posts);
     } catch (error) {
-        alert(error.message);
+        alert(error.message || 'Erro ao curtir post.');
     } finally {
         if (button) button.disabled = false;
     }
 };
 
-// Duplo clique na imagem (estilo Instagram)
+// Duplo clique na imagem (estilo Instagram com coração pop)
 window.handleQuickDoubleTapLike = function(postId) {
-    const pop = document.getElementById(`heart-pop-${postId}`);
+    const pop = document.getElementById('heart-pop-' + postId);
     if (pop) {
         pop.classList.add('pop');
         setTimeout(() => pop.classList.remove('pop'), 850);
     }
 
-    // Se ainda não tiver curtido, curte
-    if (!isPostLiked(postId)) {
-        const likeBtn = document.querySelector(`#card-${postId} .like-btn`);
+    const likeBtn = document.querySelector('#card-' + postId + ' .like-btn');
+    if (!likeBtn || !likeBtn.classList.contains('liked')) {
         togglePostLike(postId, likeBtn);
+    }
+};
+
+// ============================================================
+// SISTEMA DE COMENTÁRIOS, RESPOSTAS E CURTIDAS (ESTILO INSTAGRAM)
+// ============================================================
+let activeCommentPostId = null;
+let activeReplyParentId = null;
+let activeReplyAuthorName = null;
+
+function renderIgCommentsModalStructure() {
+    if (document.getElementById('igCommentsModal')) return;
+
+    const modal = document.createElement('div');
+    modal.id = 'igCommentsModal';
+    modal.className = 'ig-comments-modal-overlay';
+
+    modal.innerHTML = `
+        <div class="ig-comments-dialog">
+            <header class="ig-comments-header">
+                <h3><i class="far fa-comments"></i> Comentários</h3>
+                <button type="button" class="ig-comments-close-btn" onclick="closePostCommentsModal()">&times;</button>
+            </header>
+
+            <div class="ig-comments-body" id="igCommentsBody">
+                <div style="text-align:center;padding:30px;color:var(--cyan);">
+                    <i class="fas fa-spinner fa-spin fa-2x"></i>
+                    <p style="margin-top:10px;font-size:0.85rem;">Carregando comentários...</p>
+                </div>
+            </div>
+
+            <footer class="ig-comments-footer" id="igCommentsFooter">
+                <!-- Preenchido dinamicamente com base no status de login -->
+            </footer>
+        </div>
+    `;
+
+    document.body.appendChild(modal);
+}
+
+window.openPostCommentsModal = async function(postId) {
+    activeCommentPostId = postId;
+    activeReplyParentId = null;
+    activeReplyAuthorName = null;
+
+    renderIgCommentsModalStructure();
+    const modal = document.getElementById('igCommentsModal');
+    if (modal) modal.style.display = 'flex';
+
+    await loadAndRenderComments(postId);
+};
+
+window.closePostCommentsModal = function() {
+    activeCommentPostId = null;
+    activeReplyParentId = null;
+    activeReplyAuthorName = null;
+    const modal = document.getElementById('igCommentsModal');
+    if (modal) modal.style.display = 'none';
+};
+
+async function loadAndRenderComments(postId) {
+    const body = document.getElementById('igCommentsBody');
+    const footer = document.getElementById('igCommentsFooter');
+    if (!body || !footer) return;
+
+    const posts = getStoredPosts();
+    const post = posts.find(p => p.id === postId) || {};
+
+    try {
+        let comments = [];
+        if (window.ApiClient) {
+            comments = await window.ApiClient.getComments(postId);
+        }
+
+        let html = `
+            <div class="ig-post-caption-lead">
+                <img src="${post.authorAvatar || 'imagens/Logo_colorida.png'}" alt="Avatar" class="ig-comment-avatar">
+                <div class="ig-comment-main">
+                    <div class="ig-comment-bubble">
+                        <span class="ig-comment-author">${post.author || 'Qualquer Coisa Rápido'}</span>
+                        <span>${formatCaptionText(post.caption || '')}</span>
+                    </div>
+                    <div class="ig-comment-actions-bar">
+                        <span>${formatTimeAgo(post.date)}</span>
+                        <span>Publicação Oficial</span>
+                    </div>
+                </div>
+            </div>
+        `;
+
+        if (!comments || comments.length === 0) {
+            html += `
+                <div style="text-align:center;padding:40px 20px;color:rgba(255,255,255,0.45);font-size:0.88rem;">
+                    <i class="far fa-comment-dots" style="font-size:2rem;margin-bottom:10px;display:block;opacity:0.4;"></i>
+                    Seja a primeira pessoa a comentar nesta publicação!
+                </div>
+            `;
+        } else {
+            html += comments.map(c => renderCommentItemHtml(c)).join('');
+        }
+
+        body.innerHTML = html;
+        renderCommentsFooter();
+    } catch (err) {
+        body.innerHTML = '<div style="color:#f87171;padding:20px;text-align:center;">Erro ao carregar comentários: ' + err.message + '</div>';
+    }
+}
+
+function renderCommentItemHtml(c, isReply = false) {
+    const roleBadge = c.author_role === 'admin' 
+        ? '<span style="background:#7c3aed;color:#fff;font-size:0.65rem;padding:1px 6px;border-radius:4px;margin-left:4px;">👑 DEV</span>' 
+        : '';
+    
+    const isOwner = window.ApiClient?.getUser()?.id === c.user_id || window.ApiClient?.getUser()?.role === 'admin';
+
+    return `
+        <div class="ig-comment-row" id="comment-row-${c.id}">
+            <img src="${c.author_avatar || 'imagens/Logo_colorida.png'}" alt="${c.author_name}" class="ig-comment-avatar" style="${isReply ? 'width:30px;height:30px;' : ''}">
+            <div class="ig-comment-main">
+                <div class="ig-comment-bubble">
+                    <span class="ig-comment-author">${c.author_name} ${roleBadge}</span>
+                    <span>${c.content}</span>
+                </div>
+                <div class="ig-comment-actions-bar">
+                    <span>${formatTimeAgo(c.created_at)}</span>
+                    <button type="button" class="ig-reply-trigger-btn" onclick="triggerReplyToComment(${c.id}, '${c.author_name.replace(/'/g, "\\'")}')">Responder</button>
+                    ${isOwner ? '<button type="button" class="ig-reply-trigger-btn" style="color:#f87171;" onclick="deleteCommentFromPost(' + c.id + ')"><i class="fas fa-trash-alt"></i></button>' : ''}
+                </div>
+
+                ${(c.replies && c.replies.length > 0) ? `
+                    <button type="button" class="ig-toggle-replies-btn" onclick="toggleRepliesVisibility(${c.id}, this)">
+                        <span style="display:inline-block;width:24px;height:1px;background:#c084fc;"></span>
+                        <span>Ver ${c.replies.length} resposta(s)</span>
+                    </button>
+                    <div class="ig-replies-thread" id="replies-thread-${c.id}" style="display:none;">
+                        ${c.replies.map(r => renderCommentItemHtml(r, true)).join('')}
+                    </div>
+                ` : ''}
+            </div>
+            
+            <div class="ig-comment-like-col">
+                <button type="button" class="ig-comment-heart-btn ${c.liked_by_me ? 'liked' : ''}" onclick="toggleCommentLike(${c.id}, this)" title="Curtir comentário">
+                    <i class="${c.liked_by_me ? 'fas fa-heart' : 'far fa-heart'}"></i>
+                </button>
+                <span class="ig-comment-likes-num" id="comment-likes-num-${c.id}">${c.likes_count || 0}</span>
+            </div>
+        </div>
+    `;
+}
+
+function renderCommentsFooter() {
+    const footer = document.getElementById('igCommentsFooter');
+    if (!footer) return;
+
+    const isAuth = window.ApiClient?.isAuthenticated();
+    const user = window.getCurrentUser();
+
+    if (!isAuth) {
+        footer.innerHTML = `
+            <button type="button" onclick="closePostCommentsModal(); openAdminLoginModal();" style="width:100%;background:linear-gradient(135deg,#7c3aed,#06b6d4);border:none;color:#fff;font-family:'Orbitron',sans-serif;font-weight:700;font-size:0.85rem;padding:12px 18px;border-radius:10px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;">
+                <i class="fas fa-sign-in-alt"></i> Entre com sua conta para curtir e comentar
+            </button>
+        `;
+        return;
+    }
+
+    const replyBannerHtml = activeReplyParentId ? `
+        <div class="ig-replying-pill">
+            <span>Respondendo a <strong>@${activeReplyAuthorName}</strong></span>
+            <button type="button" onclick="cancelReplyToComment()" title="Cancelar resposta">&times;</button>
+        </div>
+    ` : '';
+
+    footer.innerHTML = `
+        ${replyBannerHtml}
+        <form class="ig-comment-input-row" onsubmit="submitPostComment(event)">
+            <img src="${user?.photoURL || 'imagens/Logo_colorida.png'}" alt="Avatar" style="width:34px;height:34px;border-radius:50%;object-fit:cover;">
+            <input type="text" id="igCommentInputText" class="ig-comment-input-field" placeholder="${activeReplyAuthorName ? ('Responder a @' + activeReplyAuthorName + '...') : 'Adicione um comentário...'}" required autocomplete="off">
+            <button type="submit" id="igCommentSubmitBtn" class="ig-comment-send-btn">
+                Publicar
+            </button>
+        </form>
+    `;
+
+    const input = document.getElementById('igCommentInputText');
+    if (input && activeReplyParentId) input.focus();
+}
+
+window.triggerReplyToComment = function(commentId, authorName) {
+    if (!window.ApiClient?.isAuthenticated()) {
+        alert('Faça login para responder aos comentários!');
+        closePostCommentsModal();
+        openAdminLoginModal();
+        return;
+    }
+
+    activeReplyParentId = commentId;
+    activeReplyAuthorName = authorName;
+    renderCommentsFooter();
+};
+
+window.cancelReplyToComment = function() {
+    activeReplyParentId = null;
+    activeReplyAuthorName = null;
+    renderCommentsFooter();
+};
+
+window.toggleRepliesVisibility = function(commentId, btn) {
+    const thread = document.getElementById('replies-thread-' + commentId);
+    if (!thread) return;
+
+    const isHidden = thread.style.display === 'none';
+    thread.style.display = isHidden ? 'flex' : 'none';
+    if (btn) {
+        const textSpan = btn.querySelector('span:last-child');
+        if (textSpan) {
+            textSpan.textContent = isHidden ? 'Ocultar respostas' : 'Ver respostas';
+        }
+    }
+};
+
+window.submitPostComment = async function(e) {
+    e.preventDefault();
+    if (!activeCommentPostId) return;
+
+    const input = document.getElementById('igCommentInputText');
+    const btn = document.getElementById('igCommentSubmitBtn');
+    const content = input ? input.value.trim() : '';
+
+    if (!content) return;
+
+    if (btn) {
+        btn.disabled = true;
+        btn.textContent = 'Enviando...';
+    }
+
+    try {
+        await window.ApiClient.addComment(activeCommentPostId, content, activeReplyParentId);
+        
+        const counterText = document.getElementById('comments-count-text-' + activeCommentPostId);
+        const posts = getStoredPosts();
+        const post = posts.find(p => p.id === activeCommentPostId);
+        if (post) {
+            post.commentsCount = (post.commentsCount || 0) + 1;
+            if (counterText) counterText.textContent = 'Ver todos os ' + post.commentsCount + ' comentários';
+        }
+
+        activeReplyParentId = null;
+        activeReplyAuthorName = null;
+        await loadAndRenderComments(activeCommentPostId);
+    } catch (err) {
+        alert(err.message || 'Erro ao enviar comentário.');
+    } finally {
+        if (btn) {
+            btn.disabled = false;
+            btn.textContent = 'Publicar';
+        }
+    }
+};
+
+window.toggleCommentLike = async function(commentId, btn) {
+    if (!window.ApiClient?.isAuthenticated()) {
+        alert('Faça login para curtir comentários!');
+        closePostCommentsModal();
+        openAdminLoginModal();
+        return;
+    }
+
+    if (btn) btn.disabled = true;
+    try {
+        const res = await window.ApiClient.likeComment(commentId);
+        if (btn) {
+            btn.classList.toggle('liked', res.liked);
+            const icon = btn.querySelector('i');
+            if (icon) icon.className = res.liked ? 'fas fa-heart' : 'far fa-heart';
+        }
+        const numElem = document.getElementById('comment-likes-num-' + commentId);
+        if (numElem) numElem.textContent = res.likes_count;
+    } catch (err) {
+        alert(err.message || 'Erro ao curtir comentário.');
+    } finally {
+        if (btn) btn.disabled = false;
+    }
+};
+
+window.deleteCommentFromPost = async function(commentId) {
+    if (!confirm('Deseja excluir este comentário?')) return;
+    try {
+        await window.ApiClient.deleteComment(commentId);
+        await loadAndRenderComments(activeCommentPostId);
+    } catch (err) {
+        alert(err.message || 'Erro ao excluir comentário.');
     }
 };
 

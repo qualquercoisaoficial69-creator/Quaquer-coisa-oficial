@@ -135,6 +135,20 @@ export const initDatabase = () => {
         type TEXT DEFAULT 'opiniao',
         message TEXT NOT NULL,
         created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+      )`,
+      `CREATE TABLE IF NOT EXISTS post_likes (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        post_id INTEGER NOT NULL,
+        user_id INTEGER NOT NULL,
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        UNIQUE(post_id, user_id)
+      )`,
+      `CREATE TABLE IF NOT EXISTS comment_likes (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        comment_id INTEGER NOT NULL,
+        user_id INTEGER NOT NULL,
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        UNIQUE(comment_id, user_id)
       )`
     ];
 
@@ -145,6 +159,15 @@ export const initDatabase = () => {
         console.warn('Aviso ao inicializar tabela:', err.message);
       }
     }
+
+    // Migrações dinâmicas de colunas (Users & Comments)
+    try { await client.execute(`ALTER TABLE users ADD COLUMN display_name TEXT`); } catch (e) {}
+    try { await client.execute(`ALTER TABLE users ADD COLUMN avatar_url TEXT`); } catch (e) {}
+    try { await client.execute(`ALTER TABLE users ADD COLUMN bio TEXT`); } catch (e) {}
+    try { await client.execute(`ALTER TABLE comments ADD COLUMN parent_id INTEGER DEFAULT NULL`); } catch (e) {}
+    try { await client.execute(`ALTER TABLE comments ADD COLUMN author_avatar TEXT DEFAULT NULL`); } catch (e) {}
+    try { await client.execute(`ALTER TABLE comments ADD COLUMN user_id INTEGER DEFAULT NULL`); } catch (e) {}
+    try { await client.execute(`ALTER TABLE comments ADD COLUMN likes_count INTEGER DEFAULT 0`); } catch (e) {}
 
     // Sincronização / Migração de membros da equipe (Substituição Enzo -> Gaby e remoção de João)
     try {

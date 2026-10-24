@@ -307,6 +307,9 @@ window.updateAuthUI = function(customUser) {
           </div>
           
           <div class="profile-dropdown-menu">
+            <button type="button" class="profile-dropdown-item" onclick="openProfileEditModal()" style="background:none;border:none;color:#fff;display:flex;align-items:center;gap:10px;padding:10px 14px;width:100%;cursor:pointer;font-size:0.85rem;text-align:left;">
+              <i class="fas fa-user-edit" style="color:var(--cyan);"></i> Editar Meu Perfil
+            </button>
             <a href="cms.html" class="profile-dropdown-item creator-link">
               <i class="fas fa-feather-alt"></i> Painel CMS
             </a>
@@ -344,6 +347,171 @@ document.addEventListener('click', (e) => {
     if (dropdown) dropdown.classList.remove('active');
   }
 });
+
+// ============================================================
+// MODAL DE EDIÇÃO DE PERFIL DO USUÁRIO
+// ============================================================
+function renderProfileModal() {
+  if (document.getElementById('indieProfileModal')) return;
+
+  const modal = document.createElement('div');
+  modal.id = 'indieProfileModal';
+  modal.className = 'indie-profile-modal-overlay';
+
+  modal.innerHTML = `
+    <div class="indie-profile-dialog">
+      <button type="button" onclick="closeProfileEditModal()" style="position:absolute;top:1rem;right:1rem;background:none;border:none;color:#aaa;font-size:1.4rem;cursor:pointer;">&times;</button>
+      
+      <div style="text-align:center;margin-bottom:1.4rem;">
+        <h3 style="font-family:'Orbitron',sans-serif;color:#06b6d4;margin:0 0 0.35rem 0;font-size:1.25rem;">
+          <i class="fas fa-id-badge"></i> Editar Meu Perfil
+        </h3>
+        <p style="font-size:0.83rem;color:#cbd5e1;margin:0;">Personalize seu nickname, avatar e bio no estúdio.</p>
+      </div>
+
+      <form id="editProfileForm" onsubmit="saveUserProfile(event)">
+        <div class="indie-profile-avatar-preview-wrap">
+          <img id="profilePreviewAvatar" src="imagens/Logo_colorida.png" alt="Avatar" class="indie-profile-avatar-img">
+          <span style="font-size:0.75rem;color:rgba(255,255,255,0.6);">Avatares rápidos dos integrantes ou insira um link:</span>
+          <div class="indie-profile-presets-row">
+            <img src="imagens/brenno-icon.jpeg" class="indie-profile-preset-thumb" onclick="selectProfileAvatarPreset('imagens/brenno-icon.jpeg')" title="Brenno">
+            <img src="imagens/en.jpg" class="indie-profile-preset-thumb" onclick="selectProfileAvatarPreset('imagens/en.jpg')" title="Gaby">
+            <img src="imagens/gus.jpg" class="indie-profile-preset-thumb" onclick="selectProfileAvatarPreset('imagens/gus.jpg')" title="Gustavo">
+            <img src="imagens/iz.jpg" class="indie-profile-preset-thumb" onclick="selectProfileAvatarPreset('imagens/iz.jpg')" title="Iza">
+            <img src="imagens/ma.jpg" class="indie-profile-preset-thumb" onclick="selectProfileAvatarPreset('imagens/ma.jpg')" title="Maryssa">
+            <img src="imagens/Logo_colorida.png" class="indie-profile-preset-thumb" onclick="selectProfileAvatarPreset('imagens/Logo_colorida.png')" title="Qualquer Coisa">
+            <img src="imagens/Qualquer_coisa_corpo_inteiro.png" class="indie-profile-preset-thumb" onclick="selectProfileAvatarPreset('imagens/Qualquer_coisa_corpo_inteiro.png')" title="Mascote">
+          </div>
+        </div>
+
+        <div style="margin-bottom:0.9rem;">
+          <label style="display:block;font-size:0.78rem;text-transform:uppercase;color:#c084fc;margin-bottom:0.3rem;">Foto de Perfil (URL ou Imagem)</label>
+          <input type="text" id="profileAvatarUrlInput" placeholder="Ex: https://... ou imagens/en.jpg" style="width:100%;box-sizing:border-box;background:#0d0519;border:1px solid rgba(255,255,255,0.15);padding:0.7rem 1rem;border-radius:8px;color:#fff;font-size:0.88rem;outline:none;" oninput="document.getElementById('profilePreviewAvatar').src = this.value.trim() || 'imagens/Logo_colorida.png'">
+        </div>
+
+        <div style="margin-bottom:0.9rem;">
+          <label style="display:block;font-size:0.78rem;text-transform:uppercase;color:#c084fc;margin-bottom:0.3rem;">Nickname / Nome de Exibição *</label>
+          <input type="text" id="profileNicknameInput" required maxlength="40" placeholder="Ex: Brenno F. ou DevGaby" style="width:100%;box-sizing:border-box;background:#0d0519;border:1px solid rgba(255,255,255,0.15);padding:0.7rem 1rem;border-radius:8px;color:#fff;font-size:0.92rem;outline:none;">
+        </div>
+
+        <div style="margin-bottom:1.3rem;">
+          <label style="display:block;font-size:0.78rem;text-transform:uppercase;color:#c084fc;margin-bottom:0.3rem;">Bio / Descrição Pessoal</label>
+          <textarea id="profileBioInput" rows="3" placeholder="Fale um pouco sobre você, seu papel no estúdio ou o que gosta de jogar..." style="width:100%;box-sizing:border-box;background:#0d0519;border:1px solid rgba(255,255,255,0.15);padding:0.7rem 1rem;border-radius:8px;color:#fff;font-size:0.88rem;outline:none;resize:vertical;"></textarea>
+        </div>
+
+        <div id="profileErrorMessage" style="display:none;color:#f87171;font-size:0.85rem;margin-bottom:1rem;text-align:center;"></div>
+        <div id="profileSuccessMessage" style="display:none;color:#34d399;font-size:0.85rem;margin-bottom:1rem;text-align:center;"></div>
+
+        <button type="submit" id="profileSaveBtn" style="width:100%;background:linear-gradient(135deg,#7c3aed,#06b6d4);border:none;padding:0.85rem;border-radius:8px;color:#fff;font-family:'Orbitron',sans-serif;font-weight:700;font-size:0.9rem;cursor:pointer;letter-spacing:1px;">
+          SALVAR PERFIL
+        </button>
+      </form>
+    </div>
+  `;
+
+  document.body.appendChild(modal);
+}
+
+window.selectProfileAvatarPreset = function(url) {
+  const input = document.getElementById('profileAvatarUrlInput');
+  const preview = document.getElementById('profilePreviewAvatar');
+  if (input) input.value = url;
+  if (preview) preview.src = url;
+};
+
+window.openProfileEditModal = function() {
+  renderProfileModal();
+  const u = window.getCurrentUser();
+  if (!u) {
+    window.openAdminLoginModal();
+    return;
+  }
+
+  const modal = document.getElementById('indieProfileModal');
+  const inputName = document.getElementById('profileNicknameInput');
+  const inputAvatar = document.getElementById('profileAvatarUrlInput');
+  const inputBio = document.getElementById('profileBioInput');
+  const preview = document.getElementById('profilePreviewAvatar');
+  const errBox = document.getElementById('profileErrorMessage');
+  const succBox = document.getElementById('profileSuccessMessage');
+
+  if (errBox) errBox.style.display = 'none';
+  if (succBox) succBox.style.display = 'none';
+
+  const rawUser = window.ApiClient ? window.ApiClient.getUser() : null;
+
+  if (inputName) inputName.value = u.displayName || u.name || '';
+  if (inputAvatar) inputAvatar.value = u.photoURL || '';
+  if (inputBio) inputBio.value = rawUser?.bio || '';
+  if (preview) preview.src = u.photoURL || 'imagens/Logo_colorida.png';
+
+  if (modal) modal.style.display = 'flex';
+};
+
+window.closeProfileEditModal = function() {
+  const modal = document.getElementById('indieProfileModal');
+  if (modal) modal.style.display = 'none';
+};
+
+window.saveUserProfile = async function(e) {
+  e.preventDefault();
+  const inputName = document.getElementById('profileNicknameInput');
+  const inputAvatar = document.getElementById('profileAvatarUrlInput');
+  const inputBio = document.getElementById('profileBioInput');
+  const errBox = document.getElementById('profileErrorMessage');
+  const succBox = document.getElementById('profileSuccessMessage');
+  const btn = document.getElementById('profileSaveBtn');
+
+  if (errBox) errBox.style.display = 'none';
+  if (succBox) succBox.style.display = 'none';
+
+  const displayName = inputName ? inputName.value.trim() : '';
+  const avatarUrl = inputAvatar ? inputAvatar.value.trim() : '';
+  const bio = inputBio ? inputBio.value.trim() : '';
+
+  if (!displayName) {
+    if (errBox) {
+      errBox.textContent = 'Informe um apelido ou nome de exibição.';
+      errBox.style.display = 'block';
+    }
+    return;
+  }
+
+  if (btn) {
+    btn.disabled = true;
+    btn.textContent = 'SALVANDO...';
+  }
+
+  try {
+    if (!window.ApiClient) throw new Error('ApiClient não disponível');
+    const result = await window.ApiClient.updateProfile({
+      displayName,
+      avatarUrl: avatarUrl || 'imagens/Logo_colorida.png',
+      bio
+    });
+
+    if (succBox) {
+      succBox.textContent = '🎉 Perfil salvo com sucesso!';
+      succBox.style.display = 'block';
+    }
+
+    window.updateAuthUI();
+    setTimeout(() => {
+      closeProfileEditModal();
+      window.location.reload();
+    }, 900);
+  } catch (err) {
+    if (errBox) {
+      errBox.textContent = err.message || 'Erro ao atualizar perfil.';
+      errBox.style.display = 'block';
+    }
+  } finally {
+    if (btn) {
+      btn.disabled = false;
+      btn.textContent = 'SALVAR PERFIL';
+    }
+  }
+};
 
 // ============================================================
 // ADAPTADORES DA API DE PUBLICAÇÕES (SUBSTITUINDO FIRESTORE)

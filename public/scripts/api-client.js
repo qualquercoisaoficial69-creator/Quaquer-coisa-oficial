@@ -61,6 +61,23 @@ const ApiClient = {
     window.location.reload();
   },
 
+  // --- GERENCIAMENTO DE PERFIL DO USUÁRIO ---
+  async getProfile() {
+    return await this._authFetch(`${API_BASE}/auth/me`);
+  },
+
+  async updateProfile(profileData) {
+    const data = await this._authFetch(`${API_BASE}/auth/profile`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(profileData)
+    });
+    if (data.user) {
+      localStorage.setItem('qcr_user', JSON.stringify(data.user));
+    }
+    return data;
+  },
+
   // Helper interno para requisições autenticadas
   async _authFetch(url, options = {}) {
     const token = this.getToken();
@@ -144,10 +161,9 @@ const ApiClient = {
   },
 
   async likePost(postId) {
-    const res = await fetch(`${API_BASE}/posts/${postId}/like`, {
+    return await this._authFetch(`${API_BASE}/posts/${postId}/like`, {
       method: 'POST'
     });
-    return await res.json();
   },
 
   async deletePost(postId) {
@@ -156,16 +172,29 @@ const ApiClient = {
     });
   },
 
-  // --- COMENTÁRIOS ---
-  async addComment(postId, authorName, content) {
-    const res = await fetch(`${API_BASE}/comments/posts/${postId}`, {
+  // --- COMENTÁRIOS & RESPOSTAS (ESTILO INSTAGRAM) ---
+  async getComments(postId) {
+    return await this._authFetch(`${API_BASE}/comments/posts/${postId}`);
+  },
+
+  async addComment(postId, content, parentId = null) {
+    return await this._authFetch(`${API_BASE}/comments/posts/${postId}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ author_name: authorName, content })
+      body: JSON.stringify({ content, parent_id: parentId })
     });
-    const data = await res.json();
-    if (!res.ok) throw new Error(data.error || 'Erro ao enviar comentário.');
-    return data;
+  },
+
+  async likeComment(commentId) {
+    return await this._authFetch(`${API_BASE}/comments/${commentId}/like`, {
+      method: 'POST'
+    });
+  },
+
+  async deleteComment(commentId) {
+    return await this._authFetch(`${API_BASE}/comments/${commentId}`, {
+      method: 'DELETE'
+    });
   },
 
   // --- EQUIPE DO ESTÚDIO ---

@@ -2,6 +2,7 @@ import { Router } from 'express';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { getOne, run, query } from '../database/db.js';
+import { authenticateToken } from '../middleware/auth.js';
 
 const router = Router();
 const JWT_SECRET = process.env.JWT_SECRET || 'super_secret_indie_studio_key_2024';
@@ -88,15 +89,24 @@ router.post('/google', async (req, res) => {
     // Busca ou cria o usuário correspondente no banco
     let user = await getOne('SELECT * FROM users WHERE LOWER(username) = ?', [cleanEmail]);
     if (!user) {
+      const initialDisplayName = name || cleanEmail.split('@')[0];
+      const initialAvatar = avatar || 'imagens/Logo_colorida.png';
       const insert = await run(
-        'INSERT INTO users (username, password_hash, role) VALUES (?, ?, ?)',
-        [cleanEmail, 'google_authenticated', 'admin']
+        'INSERT INTO users (username, password_hash, role, display_name, avatar_url, bio) VALUES (?, ?, ?, ?, ?, ?)',
+        [cleanEmail, 'google_authenticated', 'admin', initialDisplayName, initialAvatar, '']
       );
-      user = { id: insert.lastID, username: cleanEmail, role: 'admin' };
+      user = {
+        id: insert.lastID,
+        username: cleanEmail,
+        role: 'admin',
+        display_name: initialDisplayName,
+        avatar_url: initialAvatar,
+        bio: ''
+      };
     }
 
     const token = jwt.sign(
-      { id: user.id, username: user.username, role: 'admin' },
+      { id: user.id, username: user.username, role: user.role || 'admin' },
       JWT_SECRET,
       { expiresIn: '7d' }
     );
@@ -108,13 +118,81 @@ router.post('/google', async (req, res) => {
         id: user.id,
         username: user.username,
         email: cleanEmail,
-        displayName: name || user.username.split('@')[0],
-        avatar: avatar || 'imagens/Logo_colorida.png',
-        role: 'admin'
+        displayName: user.display_name || name || user.username.split('@')[0],
+        avatar: user.avatar_url || avatar || 'imagens/Logo_colorida.png',
+        bio: user.bio || '',
+        role: user.role || 'admin'
       }
     });
   } catch (error) {
     res.status(500).json({ error: 'Erro ao processar login via Google: ' + error.message });
+  }
+});
+
+// Obter dados do perfil atual (Autenticado)
+router.get('/me', authenticateToken, async (req, res) => {
+  try {
+    const user = await getOne(
+      'SELECT id, username, role, display_name, avatar_url, bio, created_at FROM users WHERE id = ?',
+      [req.user.id]
+    );
+    if (!user) {
+      return res.status(404).json({ error: 'Usuário não encontrado.' });
+    }
+    res.json({
+      id: user.id,
+      username: user.username,
+      displayName: user.display_name || user.username.split('@')[0],
+      avatar: user.avatar_url || 'imagens/Logo_colorida.png',
+      bio: user.bio || '',
+      role: user.role,
+      created_at: user.created_at
+    });
+  } catch (error) {
+    res.status(500).json({ error: 'Erro ao carregar perfil: ' + error.message });
+  }
+});
+
+// Atualizar Perfil próprio (Nickname, Foto, Bio)
+router.put('/profile', authenticateToken, async (req, res) => {
+  try {
+    const { displayName, avatarUrl, bio } = req.body;
+
+    if (displayName && displayName.trim().length > 40) {
+      return res.status(400).json({ error: 'O apelido deve ter no máximo 40 caracteres.' });
+    }
+
+    await run(`
+      UPDATE users 
+      SET display_name = COALESCE(?, display_name),
+          avatar_url = COALESCE(?, avatar_url),
+          bio = COALESCE(?, bio)
+      WHERE id = ?
+    `, [
+      displayName !== undefined ? displayName.trim() : null,
+      avatarUrl !== undefined ? avatarUrl.trim() : null,
+      bio !== undefined ? bio.trim() : null,
+      req.user.id
+    ]);
+
+    const updated = await getOne(
+      'SELECT id, username, role, display_name, avatar_url, bio FROM users WHERE id = ?',
+      [req.user.id]
+    );
+
+    res.json({
+      message: 'Perfil atualizado com sucesso!',
+      user: {
+        id: updated.id,
+        username: updated.username,
+        displayName: updated.display_name || updated.username.split('@')[0],
+        avatar: updated.avatar_url || 'imagens/Logo_colorida.png',
+        bio: updated.bio || '',
+        role: updated.role
+      }
+    });
+  } catch (error) {
+    res.status(500).json({ error: 'Erro ao atualizar perfil: ' + error.message });
   }
 });
 

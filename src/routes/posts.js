@@ -1,14 +1,26 @@
 import { Router } from 'express';
+import jwt from 'jsonwebtoken';
 import { query, getOne, run } from '../database/db.js';
 import { authenticateToken } from '../middleware/auth.js';
 
 const router = Router();
+const JWT_SECRET = process.env.JWT_SECRET || 'super_secret_indie_studio_key_2024';
 
 // 1. Obter Feed estilo Instagram (com mídias carrossel, likes e total de comentários)
 // Suporta filtro por jogo: /api/posts?game_id=1
 router.get('/', async (req, res) => {
   try {
     const { game_id } = req.query;
+    const authHeader = req.headers['authorization'];
+    let currentUserId = null;
+
+    if (authHeader) {
+      try {
+        const token = authHeader.split(' ')[1];
+        const decoded = jwt.verify(token, JWT_SECRET);
+        if (decoded && decoded.id) currentUserId = decoded.id;
+      } catch (e) {}
+    }
 
     let sql = `
       SELECT p.*, g.title as game_title, g.slug as game_slug
@@ -26,6 +38,16 @@ router.get('/', async (req, res) => {
 
     const posts = await query(sql, params);
 
+    // Busca curtidas do usuário atual nos posts
+    let userLikedPostIds = new Set();
+    if (currentUserId) {
+      const userLikes = await query(
+        'SELECT post_id FROM post_likes WHERE user_id = ?',
+        [currentUserId]
+      );
+      userLikedPostIds = new Set(userLikes.map(l => l.post_id));
+    }
+
     // Para cada post, buscar o carrossel de mídias e quantidade de comentários
     const postsWithDetails = await Promise.all(
       posts.map(async (post) => {
@@ -40,7 +62,8 @@ router.get('/', async (req, res) => {
         return {
           ...post,
           media,
-          comments_count: commentCount ? commentCount.count : 0
+          comments_count: commentCount ? commentCount.count : 0,
+          liked_by_me: userLikedPostIds.has(post.id)
         };
       })
     );
@@ -134,19 +157,42 @@ router.post('/', authenticateToken, async (req, res) => {
   }
 });
 
-// 4. Curtir Post (Interação estilo Instagram - Público)
-router.post('/:id/like', async (req, res) => {
+// 4. Curtir / Descurtir Post (Interação estilo Instagram - Apenas usuários cadastrados)
+router.post('/:id/like', authenticateToken, async (req, res) => {
   try {
     const { id } = req.params;
-    await run('UPDATE posts SET likes_count = likes_count + 1 WHERE id = ?', [id]);
+    const userId = req.user.id;
+
+    const post = await getOne('SELECT id, likes_count FROM posts WHERE id = ?', [id]);
+    if (!post) {
+      return res.status(404).json({ error: 'Post não encontrado.' });
+    }
+
+    const existingLike = await getOne(
+      'SELECT id FROM post_likes WHERE post_id = ? AND user_id = ?',
+      [id, userId]
+    );
+
+    let liked = false;
+    if (existingLike) {
+      await run('DELETE FROM post_likes WHERE post_id = ? AND user_id = ?', [id, userId]);
+      await run('UPDATE posts SET likes_count = MAX(0, likes_count - 1) WHERE id = ?', [id]);
+      liked = false;
+    } else {
+      await run('INSERT INTO post_likes (post_id, user_id) VALUES (?, ?)', [id, userId]);
+      await run('UPDATE posts SET likes_count = likes_count + 1 WHERE id = ?', [id]);
+      liked = true;
+    }
+
     const updated = await getOne('SELECT likes_count FROM posts WHERE id = ?', [id]);
 
     res.json({
-      message: 'Post curtido!',
+      message: liked ? 'Post curtido!' : 'Curtida removida!',
+      liked,
       likes_count: updated.likes_count
     });
   } catch (error) {
-    res.status(500).json({ error: 'Erro ao curtir post: ' + error.message });
+    res.status(500).json({ error: 'Erro ao processar curtida no post: ' + error.message });
   }
 });
 
