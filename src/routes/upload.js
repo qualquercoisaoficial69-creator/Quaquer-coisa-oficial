@@ -54,16 +54,20 @@ router.post('/', authenticateToken, upload.single('file'), async (req, res) => {
 
     const imgbbKey = process.env.IMGBB_API_KEY;
 
-    // Se tiver a chave do ImgBB configurada na Vercel, envia para a nuvem permanente
+    // 1. Tenta enviar para o ImgBB se a chave estiver configurada
     if (imgbbKey) {
-      const publicUrl = await uploadToImgBB(req.file.buffer, imgbbKey);
-      return res.json({
-        message: 'Upload realizado na nuvem com sucesso!',
-        url: publicUrl
-      });
+      try {
+        const publicUrl = await uploadToImgBB(req.file.buffer, imgbbKey);
+        return res.json({
+          message: 'Upload realizado na nuvem com sucesso!',
+          url: publicUrl
+        });
+      } catch (imgbbErr) {
+        console.warn('Aviso: ImgBB indisponível ou bloqueado, utilizando fallback direto:', imgbbErr.message);
+      }
     }
 
-    // Se estiver rodando localmente sem ImgBB, salva na pasta uploads local
+    // 2. Se estiver rodando localmente com sistema de arquivos gravável, salva na pasta uploads local
     try {
       const ext = path.extname(req.file.originalname) || '.png';
       const filename = `${Date.now()}-${Math.round(Math.random() * 1e9)}${ext}`;
@@ -75,12 +79,12 @@ router.post('/', authenticateToken, upload.single('file'), async (req, res) => {
         url: `/uploads/${filename}`
       });
     } catch (fsErr) {
-      // Fallback para Data URI em serverless sem chave ImgBB
+      // 3. Fallback permanente e 100% resiliente para Vercel Serverless (Data URI armazenado no Turso DB)
       const mime = req.file.mimetype || 'image/png';
       const base64 = req.file.buffer.toString('base64');
       const dataUri = `data:${mime};base64,${base64}`;
       return res.json({
-        message: 'Upload processado com sucesso!',
+        message: 'Upload processado e salvo com sucesso!',
         url: dataUri
       });
     }
