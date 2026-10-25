@@ -777,10 +777,31 @@ window.saveGameBlocksVisual = async function() {
 // CADASTRO DE NOVO JOGO (MODAL)
 // ============================================================
 
+let pendingGameCoverFile = null;
+
+window.handleNewGameCoverSelect = function(e) {
+    const file = e.target.files ? e.target.files[0] : null;
+    if (!file) return;
+
+    pendingGameCoverFile = file;
+    const preview = document.getElementById('newGameCoverPreview');
+    const status = document.getElementById('newGameCoverStatus');
+
+    const reader = new FileReader();
+    reader.onload = function(evt) {
+        if (preview) preview.src = evt.target.result;
+        if (status) status.textContent = `✓ Foto selecionada: ${file.name}`;
+    };
+    reader.readAsDataURL(file);
+};
+
 window.openNewGameModal = function() {
     const modal = document.getElementById('cmsNewGameModal');
     if (modal) {
+        modal.classList.add('active');
         modal.style.display = 'flex';
+        modal.style.opacity = '1';
+        modal.style.visibility = 'visible';
         modal.setAttribute('aria-hidden', 'false');
     }
 };
@@ -788,7 +809,10 @@ window.openNewGameModal = function() {
 window.closeNewGameModal = function() {
     const modal = document.getElementById('cmsNewGameModal');
     if (modal) {
+        modal.classList.remove('active');
         modal.style.display = 'none';
+        modal.style.opacity = '0';
+        modal.style.visibility = 'hidden';
         modal.setAttribute('aria-hidden', 'true');
     }
 };
@@ -796,7 +820,8 @@ window.closeNewGameModal = function() {
 window.generateSlug = function(title) {
     const slugInput = document.getElementById('newGameSlug');
     if (slugInput) {
-        slugInput.value = title.toLowerCase().trim()
+        slugInput.value = (title || '').toLowerCase().trim()
+            .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
             .replace(/[^\w\s-]/g, '')
             .replace(/[\s_-]+/g, '-')
             .replace(/^-+|-+$/g, '');
@@ -806,42 +831,68 @@ window.generateSlug = function(title) {
 window.submitNewGame = async function(e) {
     e.preventDefault();
     const title = document.getElementById('newGameTitle').value.trim();
-    const slug = document.getElementById('newGameSlug').value.trim();
+    let slug = document.getElementById('newGameSlug').value.trim();
     const genre = document.getElementById('newGameGenre').value.trim();
     const status = document.getElementById('newGameStatus').value;
     const tagline = document.getElementById('newGameTagline').value.trim();
     const submitBtn = document.getElementById('newGameSubmitBtn');
+    const preview = document.getElementById('newGameCoverPreview');
 
-    if (!title || !slug) {
-        alert('Título e Slug são obrigatórios!');
+    if (!title) {
+        alert('Por favor, preencha o título do jogo!');
         return;
     }
 
+    if (!slug) {
+        slug = title.toLowerCase().trim()
+            .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+            .replace(/[^\w\s-]/g, '')
+            .replace(/[\s_-]+/g, '-')
+            .replace(/^-+|-+$/g, '');
+    }
+
     submitBtn.disabled = true;
-    submitBtn.textContent = 'CRIANDO...';
+    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Criando...';
 
     try {
         if (!window.ApiClient) throw new Error('Servidor indisponível.');
+
+        let coverImage = preview ? preview.src : 'imagens/preview.png';
+
+        if (pendingGameCoverFile) {
+            try {
+                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Enviando imagem...';
+                coverImage = await window.ApiClient.uploadImage(pendingGameCoverFile, 1000);
+            } catch (upErr) {
+                console.warn('Erro ao enviar imagem de capa do jogo:', upErr);
+            }
+        }
+
         await window.ApiClient.createGame({
             title,
             slug,
             genre: genre || 'Indie Game',
             status,
             tagline,
-            cover_image: 'imagens/unique_soul_capa.png',
-            banner_image: 'imagens/unique_soul_cenario.png'
+            cover_image: coverImage,
+            banner_image: coverImage
         });
 
         alert(`🎮 Jogo "${title}" criado com sucesso!`);
         closeNewGameModal();
         document.getElementById('newGameForm').reset();
+        pendingGameCoverFile = null;
+        if (preview) preview.src = 'imagens/preview.png';
+        const coverStatus = document.getElementById('newGameCoverStatus');
+        if (coverStatus) coverStatus.textContent = '';
+
         await loadCmsGames();
         loadGameBlocksForEditor(slug);
     } catch (err) {
         alert('Erro ao criar jogo: ' + err.message);
     } finally {
         submitBtn.disabled = false;
-        submitBtn.textContent = 'Criar Jogo';
+        submitBtn.innerHTML = '<i class="fas fa-plus"></i> Criar Jogo';
     }
 };
 

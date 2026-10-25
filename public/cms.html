@@ -457,7 +457,7 @@
     </div>
 
     <!-- MODAL DE NOVO JOGO -->
-    <div class="game-modal-overlay" id="cmsNewGameModal" aria-hidden="true" role="dialog" style="display:none;position:fixed;inset:0;background:rgba(8,1,18,0.85);backdrop-filter:blur(8px);z-index:99999;align-items:center;justify-content:center;padding:1rem;">
+    <div class="game-modal-overlay" id="cmsNewGameModal" aria-hidden="true" role="dialog" onclick="if(event.target===this)closeNewGameModal()" style="display:none;position:fixed;inset:0;background:rgba(8,1,18,0.88);backdrop-filter:blur(10px);z-index:99999;align-items:center;justify-content:center;padding:1rem;">
         <div class="game-modal-box" style="background:#16092b;border:1px solid #7c3aed;border-radius:14px;max-width:520px;width:100%;padding:28px;box-shadow:0 0 35px rgba(124,58,237,0.3);position:relative;">
             <button type="button" class="modal-close-btn" onclick="closeNewGameModal()" aria-label="Fechar janela" style="position:absolute;top:1rem;right:1rem;background:none;border:none;color:#aaa;font-size:1.4rem;cursor:pointer;">
                 <i class="fas fa-times"></i>
@@ -479,7 +479,7 @@
                     <label style="display:block;font-size:0.8rem;color:#c084fc;margin-bottom:4px;text-transform:uppercase;">Slug (URL da Página)</label>
                     <input type="text" id="newGameSlug" required placeholder="chronos-protocol" style="width:100%;box-sizing:border-box;background:#0d0519;border:1px solid rgba(255,255,255,0.15);padding:10px 14px;border-radius:8px;color:#06b6d4;outline:none;">
                 </div>
-                <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;">
+                <div style="grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;display:grid;">
                     <div>
                         <label style="display:block;font-size:0.8rem;color:#c084fc;margin-bottom:4px;text-transform:uppercase;">Gênero</label>
                         <input type="text" id="newGameGenre" placeholder="Ex: RPG 2D / Ação" style="width:100%;box-sizing:border-box;background:#0d0519;border:1px solid rgba(255,255,255,0.15);padding:10px 14px;border-radius:8px;color:#fff;outline:none;">
@@ -498,6 +498,19 @@
                 <div style="margin-bottom:14px;">
                     <label style="display:block;font-size:0.8rem;color:#c084fc;margin-bottom:4px;text-transform:uppercase;">Slogan / Tagline</label>
                     <input type="text" id="newGameTagline" placeholder="Ex: Uma jornada misteriosa através das sombras..." style="width:100%;box-sizing:border-box;background:#0d0519;border:1px solid rgba(255,255,255,0.15);padding:10px 14px;border-radius:8px;color:#fff;outline:none;">
+                </div>
+                <div style="margin-bottom:14px;">
+                    <label style="display:block;font-size:0.8rem;color:#c084fc;margin-bottom:6px;text-transform:uppercase;">Foto / Capa do Jogo</label>
+                    <div style="display:flex;gap:14px;align-items:center;background:rgba(0,0,0,0.3);padding:10px 14px;border-radius:10px;border:1px solid rgba(255,255,255,0.1);">
+                        <img id="newGameCoverPreview" src="imagens/preview.png" alt="Preview Capa" style="width:60px;height:75px;object-fit:cover;border-radius:8px;border:1px solid rgba(255,255,255,0.2);background:#000;">
+                        <div style="flex:1;">
+                            <input type="file" id="newGameCoverFile" accept="image/*" style="display:none;" onchange="handleNewGameCoverSelect(event)">
+                            <button type="button" onclick="document.getElementById('newGameCoverFile').click()" style="background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.2);color:#fff;padding:8px 14px;border-radius:6px;font-size:0.82rem;cursor:pointer;display:inline-flex;align-items:center;gap:6px;">
+                                <i class="fas fa-camera"></i> Escolher Foto do Aparelho
+                            </button>
+                            <span id="newGameCoverStatus" style="display:block;font-size:0.75rem;color:var(--cyan);margin-top:6px;"></span>
+                        </div>
+                    </div>
                 </div>
                 <div style="display:flex;gap:12px;justify-content:flex-end;margin-top:16px;">
                     <button type="button" class="btn-cms-cancel" onclick="closeNewGameModal()">Cancelar</button>

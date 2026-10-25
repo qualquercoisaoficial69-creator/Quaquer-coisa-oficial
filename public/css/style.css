@@ -2368,6 +2368,17 @@ html {
     visibility: visible;
 }
 
+#cmsNewGameModal.active {
+    display: flex !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+    pointer-events: auto !important;
+}
+
+#cmsNewGameModal.active .game-modal-box {
+    transform: translateY(0) scale(1) !important;
+}
+
 .game-modal-box {
     background: #19062e;
     border: 1px solid rgba(0, 255, 255, 0.4);
