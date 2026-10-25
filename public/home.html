@@ -169,8 +169,28 @@
 
                 <section class="home-posts-empty" id="homePostsEmpty" aria-live="polite" hidden>
                     <i class="fas fa-feather-alt" aria-hidden="true"></i>
-                    <h2>Ainda não há publicações</h2>
-                    <p>Novidades do estúdio, devlogs e conteúdos especiais aparecerão aqui em breve.</p>
+                    <h2>Ainda não há publicações em destaque</h2>
+                    <p>Publicações marcadas para o carrossel no Creator Studio aparecerão aqui.</p>
+                </section>
+
+                <!-- FEED SOCIAL / DEVLOGS (ESTILO INSTAGRAM) -->
+                <section class="home-social-feed-section" id="homeSocialFeedSection" style="margin-top: 36px;" aria-label="Feed de Publicações e Devlogs">
+                    <div class="catalog-header-bar" style="margin-bottom: 22px;">
+                        <div class="catalog-title-group">
+                            <h3>FEED DE PUBLICAÇÕES</h3>
+                            <p>Devlogs, artes conceituais e novidades compartilhadas pela equipe</p>
+                        </div>
+                        <div class="catalog-filter-tabs">
+                            <button type="button" class="catalog-tab active" data-filter="all" onclick="filterFeedCategory('all', this)">Todos</button>
+                            <button type="button" class="catalog-tab" data-filter="devlog" onclick="filterFeedCategory('devlog', this)">Devlogs</button>
+                            <button type="button" class="catalog-tab" data-filter="arte" onclick="filterFeedCategory('arte', this)">Artes</button>
+                            <button type="button" class="catalog-tab" data-filter="jogo" onclick="filterFeedCategory('jogo', this)">Jogos</button>
+                            <button type="button" class="catalog-tab" data-filter="novidade" onclick="filterFeedCategory('novidade', this)">Novidades</button>
+                        </div>
+                    </div>
+
+                    <div class="instagram-feed-container" id="homeFeedPosts"></div>
+                    <div id="feedEmptyState" style="display:none;" class="empty-feed-container"></div>
                 </section>
                 </div> <!-- Fim de #view-home -->
 

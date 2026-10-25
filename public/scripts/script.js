@@ -739,6 +739,9 @@ window.loadPosts = async function(force = false) {
         postsLoadPromise = window.loadPostsFromApi()
             .then(posts => {
                 saveStoredPosts(posts);
+                if (document.getElementById('cmsCarousel')) window.renderCmsCarousel();
+                if (document.getElementById('cmsPostsList')) window.renderCmsDashboard();
+                if (document.getElementById('homeFeedPosts')) window.renderHomeFeed();
                 return postsCache;
             })
             .catch(error => {
@@ -755,6 +758,9 @@ window.addEventListener('qc_posts_loaded', event => {
     postsLoaded = true;
     const editParam = new URLSearchParams(window.location.search).get('edit');
     if (editParam && window.openEditPostModal) window.openEditPostModal(editParam);
+    if (document.getElementById('cmsCarousel')) window.renderCmsCarousel();
+    if (document.getElementById('cmsPostsList')) window.renderCmsDashboard();
+    if (document.getElementById('homeFeedPosts')) window.renderHomeFeed();
 });
 
 // Lista de posts curtidos pelo usuário atual
@@ -1849,6 +1855,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Renderiza se os containers existirem na página atual
     if (document.getElementById('cmsCarousel')) window.renderCmsCarousel();
     if (document.getElementById('cmsPostsList')) window.renderCmsDashboard();
+    if (document.getElementById('homeFeedPosts')) window.renderHomeFeed();
 
     window.loadPosts().catch(error => {
         const feedContainer = document.getElementById('homeFeedPosts');
