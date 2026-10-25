@@ -1,7 +1,79 @@
 // ==========================================
 // COMPORTAMENTO APÓS CARREGAR A PÁGINA
 // ==========================================
+
+// --- RENDERIZAÇÃO DINÂMICA DE JOGOS NA SIDEBAR (TODAS AS PÁGINAS) ---
+window.renderSidebarGames = async function() {
+    const fastLaunchContainers = document.querySelectorAll('.fast-launch-section');
+    const widgets = document.querySelectorAll('.sidebar-status-widget');
+    if (!fastLaunchContainers.length || !window.ApiClient) return;
+
+    try {
+        const games = await window.ApiClient.getGames();
+        const gamesList = Array.isArray(games) ? games : [];
+
+        fastLaunchContainers.forEach(container => {
+            if (gamesList.length === 0) {
+                container.innerHTML = `
+                    <span class="sidebar-nav-title">Navegar por Jogo</span>
+                    <a href="https://discord.gg/qrk3CjQ5HF" target="_blank" rel="noopener noreferrer" class="fast-launch-item" title="Comunidade Discord">
+                        <div class="fast-launch-thumb" style="display:flex;align-items:center;justify-content:center;background:#5865f2;color:#fff;">
+                            <i class="fab fa-discord"></i>
+                        </div>
+                        <div class="fast-launch-info">
+                            <span class="fast-launch-name">Discord</span>
+                            <span class="fast-launch-status">Comunidade Oficial</span>
+                        </div>
+                    </a>
+                `;
+            } else {
+                container.innerHTML = `
+                    <span class="sidebar-nav-title">Navegar por Jogo</span>
+                    ${gamesList.map(g => `
+                        <a href="jogo.html?game=${g.slug}" class="fast-launch-item" title="${g.title}">
+                            <img src="${g.cover_image || 'imagens/preview.png'}" alt="${g.title}" class="fast-launch-thumb">
+                            <div class="fast-launch-info">
+                                <span class="fast-launch-name">${g.title}</span>
+                                <span class="fast-launch-status">${g.genre || 'Indie Game'}</span>
+                            </div>
+                        </a>
+                    `).join('')}
+                    <a href="https://discord.gg/qrk3CjQ5HF" target="_blank" rel="noopener noreferrer" class="fast-launch-item" title="Comunidade Discord">
+                        <div class="fast-launch-thumb" style="display:flex;align-items:center;justify-content:center;background:#5865f2;color:#fff;">
+                            <i class="fab fa-discord"></i>
+                        </div>
+                        <div class="fast-launch-info">
+                            <span class="fast-launch-name">Discord</span>
+                            <span class="fast-launch-status">Comunidade Oficial</span>
+                        </div>
+                    </a>
+                `;
+            }
+        });
+
+        widgets.forEach(w => {
+            if (w.classList.contains('creator-only')) return;
+            const thumb = w.querySelector('.widget-thumb');
+            const title = w.querySelector('.widget-title');
+            const sub = w.querySelector('.widget-subtitle');
+            if (gamesList.length > 0) {
+                const g = gamesList[0];
+                if (thumb) thumb.src = g.cover_image || 'imagens/preview.png';
+                if (title) title.textContent = g.title;
+                if (sub) sub.textContent = (g.status || 'Em Produção').toUpperCase();
+            } else {
+                if (thumb) thumb.src = 'imagens/Logo_colorida.png';
+                if (title) title.textContent = 'Qualquer Coisa Rápido';
+                if (sub) sub.textContent = 'Estúdio Indie em Produção';
+            }
+        });
+    } catch (e) {
+        console.warn('Erro ao carregar jogos na sidebar:', e);
+    }
+};
+
 document.addEventListener('DOMContentLoaded', () => {
+    if (window.renderSidebarGames) window.renderSidebarGames();
     // --- INTRO DE PRIMEIRA VISITA ---
     setupFirstVisitIntro();
 

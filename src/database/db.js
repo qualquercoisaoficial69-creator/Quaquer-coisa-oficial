@@ -196,6 +196,17 @@ export const initDatabase = () => {
         try { await client.execute(`INSERT INTO _system_flags (flag_key) VALUES ('clean_slate_v1')`); } catch (e) {}
         console.log('✨ Banco de dados limpo com sucesso! Pronto para postar do zero.');
       }
+
+      // Limpeza de jogos demo solicitada pelo usuário ("tire aqueles jogos do catalogo pq eu msm vou fazer")
+      const gamesWipedAlready = await client.execute(`SELECT flag_key FROM _system_flags WHERE flag_key = 'clean_slate_games_v2'`);
+      if (gamesWipedAlready.rows.length === 0) {
+        console.log('🧹 Limpando jogos demo a pedido do usuário...');
+        try { await client.execute(`DELETE FROM game_blocks`); } catch (e) {}
+        try { await client.execute(`DELETE FROM feedbacks`); } catch (e) {}
+        try { await client.execute(`DELETE FROM games`); } catch (e) {}
+        try { await client.execute(`INSERT INTO _system_flags (flag_key) VALUES ('clean_slate_games_v2')`); } catch (e) {}
+        console.log('✨ Tabela de jogos limpa com sucesso para criação autoral!');
+      }
     } catch (cleanErr) {
       console.warn('Aviso ao executar limpeza de inicialização:', cleanErr.message);
     }
@@ -230,25 +241,7 @@ export const initDatabase = () => {
           });
         }
 
-        await client.execute({
-          sql: `INSERT INTO games (title, slug, tagline, status, genre, cover_image, banner_image, accent_color)
-                VALUES ('Unique Soul', 'unique-soul', 'Uma jornada narrativa através de dimensões espirituais e mistérios ancestrais.', 'alpha', 'Ação & Aventura 2D / RPG', 'imagens/unique_soul_capa.png', 'imagens/unique_soul_cenario.png', '#a855f7')`,
-          args: []
-        });
-
-        await client.execute({
-          sql: `INSERT INTO games (title, slug, tagline, status, genre, cover_image, banner_image, accent_color)
-                VALUES ('A Catedral das Almas', 'catedral-almas', 'Exploração de atmosfera gótica e mistérios arcanos.', 'prototipo', 'Exploração / Terror Psicológico', 'imagens/unique_soul_cenario.png', 'imagens/unique_soul_cenario.png', '#06b6d4')`,
-          args: []
-        });
-
-        await client.execute({
-          sql: `INSERT INTO games (title, slug, tagline, status, genre, cover_image, banner_image, accent_color)
-                VALUES ('Qualquer Coisa Quest', 'qualquer-coisa-quest', 'Um jogo de plataforma retrô com o mascote oficial do estúdio.', 'ideia', 'Plataforma 2D / Retrô', 'imagens/Qualquer_coisa_corpo_inteiro.png', 'imagens/preview.png', '#10b981')`,
-          args: []
-        });
-
-        console.log('✅ Auto-seed de usuários e jogos concluído!');
+        console.log('✅ Auto-seed de usuários concluído!');
       }
     } catch (seedErr) {
       console.warn('Auto-seed ignorado ou já executado:', seedErr.message);
