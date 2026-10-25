@@ -246,8 +246,10 @@ const ApiClient = {
     });
   },
 
-  // --- UPLOAD DE MÍDIAS & COMPRESSÃO INTELIGENTE ---
-  compressImageFile(file, maxWidth = 1000, quality = 0.82) {
+  // --- UPLOAD DE MÍDIAS & COMPRESSÃO INTELIGENTE ("BASTIDORES") ---
+  // Padroniza as resoluções de fotos enviadas (de câmeras, celulares ou PCs) para uma resolução padrão HD (máx 1200px),
+  // preservando 100% da imagem original sem distorcer, achatar ou cortar qualquer detalhe.
+  compressImageFile(file, maxDimension = 1200, quality = 0.88) {
     return new Promise((resolve) => {
       if (!file || !file.type || !file.type.startsWith('image/')) {
         return resolve(file);
@@ -263,33 +265,44 @@ const ApiClient = {
           let width = img.width;
           let height = img.height;
 
-          if (width > maxWidth || height > maxWidth) {
+          // Se a imagem for gigantesca (ex: 4K, 8K ou câmera de celular 12MP-108MP),
+          // redimensiona proporcionalmente para o tamanho padrão de exibição na web
+          if (width > maxDimension || height > maxDimension) {
             if (width > height) {
-              height = Math.round((height * maxWidth) / width);
-              width = maxWidth;
+              height = Math.round((height * maxDimension) / width);
+              width = maxDimension;
             } else {
-              width = Math.round((width * maxWidth) / height);
-              height = maxWidth;
+              width = Math.round((width * maxDimension) / height);
+              height = maxDimension;
             }
           }
 
           const canvas = document.createElement('canvas');
-          canvas.width = width;
-          canvas.height = height;
+          canvas.width = Math.max(1, width);
+          canvas.height = Math.max(1, height);
           const ctx = canvas.getContext('2d');
+
+          // Suavização e nitidez nos bastidores
+          ctx.imageSmoothingEnabled = true;
+          ctx.imageSmoothingQuality = 'high';
           ctx.drawImage(img, 0, 0, width, height);
+
+          // Se for PNG transparente, mantém png; caso contrário salva como jpeg otimizado
+          const isPng = file.type === 'image/png';
+          const exportMime = isPng ? 'image/png' : 'image/jpeg';
+          const exportExt = isPng ? '.png' : '.jpg';
 
           canvas.toBlob((blob) => {
             if (blob) {
-              const compressedFile = new File([blob], file.name ? file.name.replace(/\.[^/.]+$/, '.jpg') : 'upload.jpg', {
-                type: 'image/jpeg',
+              const compressedFile = new File([blob], file.name ? file.name.replace(/\.[^/.]+$/, exportExt) : `upload${exportExt}`, {
+                type: exportMime,
                 lastModified: Date.now()
               });
               resolve(compressedFile);
             } else {
               resolve(file);
             }
-          }, 'image/jpeg', quality);
+          }, exportMime, quality);
         };
         img.onerror = () => resolve(file);
         img.src = e.target.result;
@@ -314,8 +327,8 @@ const ApiClient = {
     return data;
   },
 
-  async uploadImage(file, maxWidth = 1000) {
-    const compressed = await this.compressImageFile(file, maxWidth);
+  async uploadImage(file, maxDimension = 1200) {
+    const compressed = await this.compressImageFile(file, maxDimension);
     const res = await this.uploadFile(compressed);
     return res.url;
   }

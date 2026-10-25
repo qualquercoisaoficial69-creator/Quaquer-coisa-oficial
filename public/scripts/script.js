@@ -448,7 +448,10 @@ window.renderCmsCarousel = function() {
     carouselCurrentIndex = 0;
     cardsContainer.innerHTML = featuredPosts.map((post, index) => `
         <article class="fanned-card" data-index="${index}">
-            <img src="${escapeCarouselText(post.mediaUrl)}" alt="${escapeCarouselText(post.title)}" class="fanned-card-bg">
+            <img src="${escapeCarouselText(post.mediaUrl)}" alt="" class="fanned-card-bg" aria-hidden="true">
+            <div class="fanned-card-art-wrap">
+                <img src="${escapeCarouselText(post.mediaUrl)}" alt="${escapeCarouselText(post.title)}" class="fanned-card-art">
+            </div>
             <div class="fanned-card-overlay">
                 <div class="spotlight-tags">
                     <span class="spotlight-badge"><i class="fas fa-star" aria-hidden="true"></i> EM DESTAQUE</span>
@@ -960,6 +963,7 @@ window.renderHomeFeed = function(filterCategory = 'all', searchQuery = '') {
 
                 <!-- Mídia da Publicação (com duplo-toque para curtir estilo Instagram) -->
                 <div class="ig-media-box" ondblclick="handleQuickDoubleTapLike('${post.id}')">
+                    <div class="ig-media-blur-bg" style="background-image: url('${post.mediaUrl}');"></div>
                     <img src="${post.mediaUrl}" alt="${post.title}" class="ig-media-img" loading="lazy">
                     <div class="ig-heart-pop" id="heart-pop-${post.id}">
                         <i class="fas fa-heart"></i>

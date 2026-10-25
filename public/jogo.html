@@ -40,15 +40,33 @@
         .minimal-card-media {
             position: relative;
             width: 100%;
-            aspect-ratio: 16 / 11;
+            height: 200px;
             overflow: hidden;
-            background: #0d0317;
+            background: radial-gradient(circle, #1a082e 0%, #0d0317 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
-        .minimal-card-media img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            transition: transform 0.5s ease;
+        .minimal-card-blur-bg {
+            position: absolute;
+            inset: -15px;
+            background-size: cover;
+            background-position: center;
+            filter: blur(20px) brightness(0.35);
+            transform: scale(1.12);
+            pointer-events: none;
+            z-index: 1;
+        }
+        .minimal-card-media img,
+        .minimal-card-img {
+            position: relative;
+            z-index: 2;
+            max-width: 100%;
+            max-height: 100%;
+            width: auto;
+            height: auto;
+            object-fit: contain;
+            transition: transform 0.4s ease;
         }
         .minimal-game-card:hover .minimal-card-media img {
             transform: scale(1.06);
@@ -253,7 +271,7 @@
                     <!-- Cabeçalho do Jogo no Inspetor -->
                     <div style="padding:0 32px 32px; margin-top:-60px; position:relative; display:flex; flex-direction:column; gap:20px;">
                         <div style="display:flex; gap:24px; align-items:flex-end; flex-wrap:wrap;">
-                            <img src="imagens/preview.png" alt="Capa do Jogo" id="inspectorCover" style="width:140px; height:190px; border-radius:18px; object-fit:cover; box-shadow:0 15px 35px rgba(0,0,0,0.7); border:2px solid rgba(255,255,255,0.2); background:#110221;">
+                            <img src="imagens/preview.png" alt="Capa do Jogo" id="inspectorCover" style="width:140px; height:190px; border-radius:18px; object-fit:contain; box-shadow:0 15px 35px rgba(0,0,0,0.7); border:2px solid rgba(255,255,255,0.2); background:radial-gradient(circle, #25093d 0%, #0d0217 100%);">
                             <div style="flex:1; min-width:260px;">
                                 <div style="display:flex; gap:8px; margin-bottom:8px; flex-wrap:wrap;">
                                     <span class="spotlight-badge" id="inspectorVersion">PROJETO</span>
@@ -421,7 +439,8 @@
                              data-category="${(game.genre || '').toLowerCase()}" 
                              onclick="selectGameInInspector('${game.slug}')">
                         <div class="minimal-card-media">
-                            <img src="${cover}" alt="${game.title}" loading="lazy">
+                            <div class="minimal-card-blur-bg" style="background-image: url('${cover}');"></div>
+                            <img src="${cover}" alt="${game.title}" class="minimal-card-img" loading="lazy">
                             <span class="card-tag-badge">${(game.status || 'Protótipo').toUpperCase()}</span>
                             <button type="button" class="card-fav-btn" onclick="event.stopPropagation(); toggleWishlist('${game.slug}', this);" title="Favoritar">
                                 <i class="fas fa-heart"></i>
